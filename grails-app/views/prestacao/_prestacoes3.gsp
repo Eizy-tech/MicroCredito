@@ -4,16 +4,20 @@
     <%
         def prestacao1Service = grailsApplication.classLoader.loadClass('microcredito.Prestacao1Service').newInstance()
     %>
+    <%@ page import="microcredito.Emprestimo1Service" %>
+    <%
+        def emprestimoServic = grailsApplication.classLoader.loadClass('microcredito.Emprestimo1Service').newInstance()
+    %>
 
     <div class="col-md-12" id="div-a">
 
-    %{--<g:link target="_blank" class="btn btn-sm btn-default mb-2 ml-2 btnRecibo "  style="color: black; width: 95%; font-size: 15px"--}%
-            %{--controller="emprestimo" action="verRecibo" id="recibo">--}%
+        %{--<g:link target="_blank" class="btn btn-sm btn-default mb-2 ml-2 btnRecibo "  style="color: black; width: 95%; font-size: 15px"--}%
+        %{--controller="emprestimo" action="verRecibo" id="recibo">--}%
         %{--<i class="fa fa-file-pdf" style="color: red"></i>&nbsp;Recibo--}%
-    %{--</g:link>--}%
-    %{--<a target="_blank" href="/emprestimo/verRecibo/recibo" id="reciboBtn">Rec</a>--}%
+        %{--</g:link>--}%
+        %{--<a target="_blank" href="/emprestimo/verRecibo/recibo" id="reciboBtn">Rec</a>--}%
 
-    <div class="box box-success" style="background-color: white">
+        <div class="box box-success" style="background-color: white">
             <div class="box-header" style="background-color: #ecf0f5">
                 <h3 class="box-title"><i class="fa fa-list"></i><strong>&nbsp;Prestações não pagas</strong></h3>
             </div>
@@ -23,67 +27,61 @@
                     <div class="col-md-3">
                         <div class="list-group mb-1">
                             <a class="list-group-item">
-                                Cliente: <b class="pull-right">${emprestimo.cliente.nome} </b>
+                                Cliente: <b class="pull-right">${emprestimo.cliente.nome}</b>
                             </a>
                             <a class="list-group-item">
-                                Emprestimo(Nº do processo): <b class="pull-right">${emprestimo.nrProcesso} </b>
+                                Emprestimo(Nº do processo): <b class="pull-right">${emprestimo.nrProcesso}</b>
                             </a>
                             <a class="list-group-item">
-                                Capital: <b class="pull-right"><g:formatNumber number="${emprestimo.valorPedido}" format="#,##0.00"/></b>
+                                Capital: <b class="pull-right"><g:formatNumber number="${emprestimo.valorPedido}"
+                                                                               format="#,##0.00"/></b>
                             </a>
                             <a class="list-group-item">
                                 Renda Normal: <b class="pull-right">
-                                <g:formatNumber number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}" format="#,##0.00"/></b>
+                                <g:formatNumber number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}"
+                                                format="#,##0.00"/></b>
                             </a>
                             <a class="list-group-item">Valor a pagar: <b class="pull-right">
-                                <g:formatNumber number="${emprestimo.valorPedido + (emprestimo.valorPedido * (emprestimo.taxaJuros / 100))}"
-                                    format="#,##0.00"/></b>
+                                <g:formatNumber
+                                        number="${emprestimo.valorPedido + (emprestimo.valorPedido * (emprestimo.taxaJuros / 100))}"
+                                        format="#,##0.00"/></b>
                             </a>
                             <a class="list-group-item">
                                 Prazo: <b class="pull-right"><g:formatDate
                                     date="${emprestimo.prazoPagamento}" format="dd MMM yyyy"/></b>
                             </a>
+                            <a class="list-group-item" style="font-weight: bold; color: #9f191f">
+                                Dívida Total: <b class="pull-right"><g:formatNumber
+                                    number="${emprestimoServic.somaPrestacoesDivida(emprestimo)}"
+                                    format="#,##0.00"/></b>
+                            </a>
+                            <a class="list-group-item">
+                                <button class="btn btn-sm btn-success btn-reduzir-capital col-md-offset-3"
+                                        id="btn-reduzir-capital" data-capital="${emprestimo.valorPedido}"
+                                        data-capital-parcela="0" data-idp-emprestimo="${emprestimo.id}"
+                                        data-id-emp="${params.cred}" params="[cred: ${params.cred}]"><i
+                                        class="fa fa-money-bill-wave"></i>&nbsp;&nbsp;&nbsp;&nbsp;Reduzir Capital&nbsp;&nbsp;&nbsp;&nbsp;
+                                </button>
+                                %{--joaoBtnParcCap--}%
+                            </a>
                         </div>
                     </div>
+
                     <div class="col-md-9">
                         <div id="prestacoesEmprestimo" class="prestacoesEmprestimo">
 
-                            %{--<ol class="breadcrumb" style="padding: 2px; align-content: center; text-align: center">--}%
-                                %{--<strong>--}%
-                                    %{--Cliente: <span id="nom_cliente"--}%
-                                                   %{--style="color:#00a65a">${emprestimo.cliente.nome}</span>--}%
-                                    %{--- Capital: <span id="valor_pedido" style="color:#00a65a"><g:formatNumber--}%
-                                        %{--number="${emprestimo.valorPedido}" format="#,##0.00"/></span>--}%
-                                    %{--- Taxa_Juros.: <span id="percentagem_juros"--}%
-                                                         %{--style="color:#00a65a">${emprestimo.taxaJuros}%</span>--}%
-                                    %{--- Renda Normal: <span id="renda-normal" style="color:#00a65a"><g:formatNumber--}%
-                                        %{--number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}"--}%
-                                        %{--format="#,##0.00"/></span>--}%
-                                    %{--- Val_Pagar: <span id="val_pag" style="color:#00a65a"><g:formatNumber--}%
-                                        %{--number="${emprestimo.valorPedido + (emprestimo.valorPedido * (emprestimo.taxaJuros / 100))}"--}%
-                                        %{--format="#,##0.00"/></span>--}%
-                                    %{--- Prazo: <span id="data_concessaoo" style="color:#00a65a"><g:formatDate--}%
-                                        %{--date="${emprestimo.prazoPagamento}" format="dd MMM yyyy"/></span>--}%
-                                    %{--- Modo_Pag.: <span id="modo-pagamento"--}%
-                                                       %{--modoPagamento="${emprestimo.modoPagamento.descricao}"--}%
-                                                       %{--style="color:#00a65a">${emprestimo.modoPagamento.descricao}</span>--}%
-                                %{--</strong>--}%
-                            %{--</ol>--}%
-
-                            <table class="table table-striped table-bordered" style="border: 2px solid gainsboro; border-radius: 5px">
+                            <table class="table table-striped table-bordered"
+                                   style="border: 2px solid gainsboro; border-radius: 5px">
                                 <thead class="thead-light" style="background-color: #00a65a0d">
                                 <tr>
                                     <th style="width: 11%">Numero</th>
                                     <th style="width: 11%">Valor</th>
                                     <th style="width: 11%">Tipo</th>
                                     <th style="width: 9%">Limite</th>
-                                    %{--<th>Estado</th>--}%
                                     <th style="width: 13%">Meio Pag.</th>
                                     <th style="width: 11%">Referencia/Conta</th>
                                     <th style="width: 9%">
                                         <input type="checkbox" class="minimal select_all-checkbox" id='select_all'>
-                                        %{--<span class="checkmark"></span>--}%
-                                        %{--<input type="checkbox" class="minimal select_all-checkbox" id='select_all'>--}%
                                         <span>Pagar</span>
                                     </th>
                                     <th style="width: 11%">Parcela</th>
@@ -94,7 +92,7 @@
                                 </thead>
                                 <tbody>
                                 <g:if test="${prestacoes.size() > 0}">
-                                    <g:each in="${prestacoes.sort{it.id}}" var="prestacao">
+                                    <g:each in="${prestacoes.sort { it.id }}" var="prestacao">
                                     %{--a prestacao tem parcela--}%
                                         <g:if test="${prestacao.prestacoes}">
                                             <tr
@@ -132,9 +130,9 @@
                                         <td>
                                             <g:formatDate date="${prestacao.dataLimite}" format="dd MMM yyyy"/>
                                         </td>
-                                        %{--<td>--}%
-                                            %{--${prestacao.estado}--}%
-                                        %{--</td>--}%
+                                    %{--<td>--}%
+                                    %{--${prestacao.estado}--}%
+                                    %{--</td>--}%
                                         <td style="padding: 1px">
                                             <select class="form-control select-meiopagamento m-0 p-0"
                                                     id="meio-pagamento${prestacao.id}"
@@ -177,14 +175,16 @@
                                                 <button class="btn btn-sm btn-primary btn-parcela"
                                                         id="btn-parcela${prestacao.id}"
                                                         data-valorprestacao="${prestacao1Service.dividaPrestacao(prestacao)}"
-                                                        data-idprestacao="${prestacao.id}">Parcelar
+                                                        data-idprestacao="${prestacao.id}"><i
+                                                        class="fa fa-money-bill-wave"></i>&nbsp;Parcelar
                                                 </button>
                                             </g:if>
                                             <g:else>
                                                 <button class="btn btn-sm btn-primary btn-parcela"
                                                         id="btn-parcela${prestacao.id}"
                                                         data-valorprestacao="${prestacao.valor}"
-                                                        data-idprestacao="${prestacao.id}"><i class="fa fa-money-check"></i>&nbsp;Parcelar
+                                                        data-idprestacao="${prestacao.id}"><i
+                                                        class="fa fa-money-bill-wave"></i>&nbsp;Parcelar
                                                 </button>
                                             </g:else>
                                         </td>
@@ -215,7 +215,8 @@
 
                                 <div class="col-sm-1" style="padding-left: 3px">
                                     <button id="btnpagar" class="btn btn-success"
-                                            style="padding: 6px; height: 90%; width: 100%">Pagar
+                                            style="padding: 6px; height: 90%; width: 100%"><i
+                                            class="fa fa-money-bill-wave"></i>&nbsp;Pagar
                                     </button>
                                 </div>
                             </div>
@@ -231,25 +232,88 @@
 %{--Modal de Parcela Normal--}%
 <div class="modal fade" id="modal-parcela">
     <div class="vertical-alignment-helper">
-    <div class="modal-dialog vertical-align-center">
-        <div class="modal-content" style="width: 30%">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><i class="fa fa-money"></i>&nbsp;Parcela</h4>
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content" style="width: 30%">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-money"></i>&nbsp;Parcela</h4>
+                </div>
+
+                <div class="modal-body">
+                    <label>Valor:</label>
+                    <input data-validation-help="Somente numeros. (Inteiros ou Decimais)" type="text"
+                           data-validation="number"
+                           data-validation-allowing="range[0.00;9999999.00],float" class="form-control allow_decimal"
+                           id="valor_parcela_modal" name="valor-parcela" placeholder="0.00" data-idprestacao=""
+                           autocomplete="off">
+
+                    <textarea class="form-control mt-4" rows="5" id="observacao_parcela_modal"
+                              placeholder="Observacao..." value=""></textarea>
+
+
+                    <script>
+                        $(".allow_decimal").on("input", function (evt) {
+                            var self = $(this);
+                            self.val(self.val().replace(/[^0-9\.]/g, ''));
+                            if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                                evt.preventDefault();
+                            }
+                        });
+                    </script>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal"
+                            id="btnSalvarParcela" data-idprestacao="" data-valorprestacao="">
+                        <i class="fa fa-check"></i>&nbsp;Concluir
+                    </button>
+                </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <div class="modal-body">
-                <label>Valor:</label>
-                <input data-validation-help="Somente numeros. (Inteiros ou Decimais)" type="text" data-validation="number"
-                       data-validation-allowing="range[0.00;9999999.00],float" class="form-control allow_decimal"
-                       id="valor_parcela_modal" name="valor-parcela" placeholder="0.00" data-idprestacao="" autocomplete="off"
-                >
+%{--Modal de Parcela Capital--}%
+<div class="modal fade" id="modal-reduzir-capital">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content" style="width: 30%">
+                <div class="modal-header">
+                    <button type="button" class="close" id="btn-parcela-capital" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-money"></i>&nbsp;Reduzir Capital</h4>
+                </div>
 
-                <textarea class="form-control mt-4" rows="5" id="observacao_parcela_modal"
-                          placeholder="Observacao..." value=""></textarea>
+                <form id="formulario-parcela-capital">
+                    <div class="modal-body">
+                        <g:hiddenField name="idEmp" value="${params.cred}" id="id-emp"/>
+                        <label>Valor:</label>
+                        <input data-validation-help="Somente numeros. (Inteiros ou Decimais)" type="text"
+                               data-validation="number"
+                               data-validation-allowing="range[0.00;9999999.00],float"
+                               class="form-control allow_decimal"
+                               id="valor_parcela_capital" name="valorParcela" placeholder="0.00" data-idprestacao=""
+                               autocomplete="off">
 
+                        <textarea class="form-control mt-4" rows="5" id="observacao_parcela_capital"
+                                  placeholder="Observacao..." name="obs" value=""></textarea>
+                        %{--<button type="submit" class="btn btn-success" data-dismiss="modal"--}%
+                        %{--id="btnSalvarParcelaCapital" data-idprestacao="" data-valorprestacao="" disabled>--}%
+                        %{--<i class="fa fa-check"></i>&nbsp;Pagar--}%
+                        %{--</button>--}%
+                        %{--joaoPagar--}%
 
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success"
+                                id="btnSalvarParcelaCapital" data-idprestacao="" data-valorprestacao="" disabled>
+                            <i class="fa fa-check"></i>&nbsp;Pagar
+                        </button>
+                    </div>
+                </form>
                 <script>
                     $(".allow_decimal").on("input", function (evt) {
                         var self = $(this);
@@ -258,17 +322,50 @@
                             evt.preventDefault();
                         }
                     });
+
+                    $(document).ready(function () {
+                        $("#formulario-parcela-capital").submit(function (event) {
+                            event.preventDefault();
+
+                            $.ajax({
+                                url: "${g.createLink( controller: 'prestacao', action:'pagarCapitalParcela')}",
+                                type: "post",
+                                data: $(this).serialize(),
+                                success: function (data) {
+                                    // window.location ='/categoriaEntidade/show/'+data.categoria.id;
+                                    alert('alert sera 1 cena');
+                                    $('#valor_parcela_capital').val('');
+                                    $('#observacao_parcela_capital').val('');
+                                    $('#btnSalvarParcelaCapital').modal('hide');
+                                },
+                                error: function () {
+                                    alert('Nao e 1 cena');
+                                    $('#valor_parcela_capital').val('');
+                                    $('#observacao_parcela_capital').val('');
+                                }
+                            });
+                        });
+                    });
+
+                    $(document).ready(
+                        $('#valor_parcela_capital').on('input', function (e) {
+                                var capital = +$('#btn-reduzir-capital').attr('data-capital');
+                                var parcelaCapital = +$(this).val();
+
+                                if (capital < parcelaCapital || parcelaCapital < 0) {
+                                    $('#btnSalvarParcelaCapital').prop('disabled', true);
+                                    alert('O valor informado não deve ser maior que o capital actual ou menor que zero.');
+                                } else {
+                                    //Vai acontecer aqui
+                                    $('#btnSalvarParcelaCapital').removeAttr('disabled');
+                                }
+                                // joaoScr
+                            }
+                        )
+                    );
                 </script>
             </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal"
-                        id="btnSalvarParcela" data-idprestacao="" data-valorprestacao="">
-                    <i class="fa fa-check"></i>&nbsp;Concluir
-                </button>
-            </div>
         </div>
-    </div>
     </div>
 </div>
 
@@ -655,6 +752,20 @@
 
             //Abrir Modal de Parcelamento
             $('#modal-parcela').modal({
+                show: true, backdrop: "static"
+            })
+        }
+    );
+    //Fim do Ao clicar para parcelar
+
+    // Ao clicar para parcelar Capital
+    $('#btn-reduzir-capital').click(
+        function () {
+            // var idPrestacao = +$(this).attr('data-idprestacao');
+            // var valorPrestacao = +$(this).attr('data-valorprestacao');
+
+            //Abrir Modal de Parcelamento
+            $('#modal-reduzir-capital').modal({
                 show: true, backdrop: "static"
             })
         }

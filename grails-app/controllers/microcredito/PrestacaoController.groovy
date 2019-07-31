@@ -326,102 +326,110 @@ class PrestacaoController {
     }
 
     //Este metodo permite ao cliente devolver parte do valor (Juros+Capital)
-    def pagarCapitalParcela(Prestacao prestacao){
-//        prestacaoGeral = this.prestacaoGeral
-        //Se tiver multa vai pagar
-        if(haMulta){//Se tiver multa, PAGA!
-            //Fazer o pagamento da multa
-            pagarMulta()
-        }
-        //Se tiver Juros vai pagar
-        if(haJuros){
-            //Pagamento da prestacaoGeral (Multa)
-            prestacao.valor
-            prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
-        }
+//    def pagarCapitalParcela(Prestacao prestacao){
+    def pagarCapitalParcela(){
+        println(params.idEmp)
+        println(params.valorParcela)
+        println(params.obs)
 
-        //Nova Prestacao Parcela Capital
-        def prestacaoCapitalParcela = new Prestacao()
-        prestacaoCapitalParcela.setDataPagamento(new Date())
-        prestacaoCapitalParcela.setMeioPagamento(MeioPagamento.findByDescricao(meioPagamentoCapital.toString()))
-        prestacaoCapitalParcela.setValor(capitalParcela)
-        prestacaoCapitalParcela.setDataLimite(emprestimoCapital.prazoPagamento)
-
-        def ultimoNumero = emprestimoCapital.prestacoes.last().numero
-        nrSequenciaPrestacao = ultimoNumero.substring(ultimoNumero.size()-3, ultimoNumero.size())
-        nrSequenciaPrestacao = novoNumero(nrSequenciaPrestacao)
-        ultimoNumero = emprestimoCapital.nrProcesso+nrSequenciaPrestacao
-        prestacaoCapitalParcela.setNumero(ultimoNumero)
-        prestacaoCapitalParcela.setTipoPrestacao(tipoPrestacaoParcelaCapital)
-        prestacaoCapitalParcela.setEmprestimo(emprestimoCapital)
-        prestacaoCapitalParcela.setObservacao(obsCapital)
-        prestacaoCapitalParcela.setDataModif(new Date())
-        prestacaoCapitalParcela.setDataRegisto(new Date())
-        prestacao.setUserModif(usuarioLogado())
-        prestacaoCapitalParcela.setEstado('Pago')
-        //Salvar prestacao capitalTotal
-        prestacaoService.save(prestacaoCapitalParcela)
-
-        def novoCapital = emprestimoCapital.valorPedido - capitalParcela
-
-        //Cria o registro de auditoria
-        def empAudit = new EmprestimoAuditoria()
-        empAudit.setEmprestimo(emprestimoCapital)
-        empAudit.setDataRegisto(new Date())
-        empAudit.setCapitalAntigo(emprestimoCapital.capital)
-        empAudit.setCapitalNovo(novoCapital)
-        empAudit.setPrazoAntigo(emprestimoCapital.prazoPagamento)
-        Calendar novoPrazo = Calendar.getInstance()
-        novoPrazo.setTime(emprestimoCapital.prazoPagamento)
-        novoPrazo.add(Calendar.MONTH, mesesExcepcao)
-        Date dataNovoPrazo = novoPrazo.getTime()
-        empAudit.setPrazoNovo(dataNovoPrazo)
-        empAudit.setTipo('Recapitalizacao')
-        empAudit.setUserResponsavel(usuarioLogado())
-        emprestimoAuditoriaService.save(empAudit)
-
-        //Recapitalizacao
-        emprestimoCapital.setValorPedido(novoCapital)
-        emprestimoCapital.setValorApagar((novoCapital * (emprestimoCapital.taxaJuros/100))+novoCapital)
-        emprestimoCapital.setDataModif(new Date())
-        emprestimoCapital.setUserModif(usuarioLogado())
-        emprestimoCapital.setPrazoPagamento(dataNovoPrazo)
-
-        //Ainda esta dentro do prazo
-        if(dataPrazo > dataHoje){//Se nao for ultimo mes, cria a proxima prestacaoGeral
-            def novaPrestacao = new Prestacao()
-            novaPrestacao.setEstado('Pendente')
-            novaPrestacao.setDataModif(new Date())
-            novaPrestacao.setUserModif(usuarioLogado())
-            novaPrestacao.setDataRegisto(new Date())
-            novaPrestacao.setValor(novoCapital * (emprestimoCapital.taxaJuros/100))
-
-            Calendar limite = Calendar.getInstance()
-            limite.setTime(prazo)
-            limite.add(Calendar.MONTH, 1)
-            dataNovoPrazo = limite.getTime()
+        render('')
 
 
-            novaPrestacao.setDataLimite(dataNovoPrazo)//Prazo da Prestacao do proximo mes
-            novaPrestacao.setEmprestimo(emprestimoCapital)
-            ultimoNumero = emprestimoCapital.prestacoes.last().numero
-            nrSequenciaPrestacao = ultimoNumero.substring(ultimoNumero.size()-3, ultimoNumero.size())
-            nrSequenciaPrestacao = Integer.parseInt(nrSequenciaPrestacao) + 1
-            nrSequenciaPrestacao = novoNumero(nrSequenciaPrestacao.toString())
-            ultimoNumero = emprestimoCapital.nrProcesso+nrSequenciaPrestacao
-            novaPrestacao.setNumero(ultimoNumero)
-            novaPrestacao.setTipoPrestacao(tipoPrestacaoRendaNormal)
-            prestacaoService.save(novaPrestacao)//Salvando a prestacaoGeral
-        }else if(dataPrazo <= dataHoje){//Se for ultimo mes, verifica se ha excepcao, se houver, deve aumentar o prazo[Ainda nao tenho os controladores na view]
-            if(!excepcao){//Nao ha excepcao
-                //Muda o estado do emprestimo para "Vencido"
-                emprestimoCapital.setEstado('Vencido')
-                emprestimoCapital.setDataModif(new Date())
-                emprestimoCapital.setUserModif(usuarioLogado())
-                emprestimoService.save(emprestimoCapital)
-            }
-        }
-        emprestimoService.save(emprestimoCapital)
+////        prestacaoGeral = this.prestacaoGeral
+//        //Se tiver multa vai pagar
+//        if(haMulta){//Se tiver multa, PAGA!
+//            //Fazer o pagamento da multa
+//            pagarMulta()
+//        }
+//        //Se tiver Juros vai pagar
+//        if(haJuros){
+//            //Pagamento da prestacaoGeral (Multa)
+//            prestacao.valor
+//            prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
+//        }
+//
+//        //Nova Prestacao Parcela Capital
+//        def prestacaoCapitalParcela = new Prestacao()
+//        prestacaoCapitalParcela.setDataPagamento(new Date())
+//        prestacaoCapitalParcela.setMeioPagamento(MeioPagamento.findByDescricao(meioPagamentoCapital.toString()))
+//        prestacaoCapitalParcela.setValor(capitalParcela)
+//        prestacaoCapitalParcela.setDataLimite(emprestimoCapital.prazoPagamento)
+//
+//        def ultimoNumero = emprestimoCapital.prestacoes.last().numero
+//        nrSequenciaPrestacao = ultimoNumero.substring(ultimoNumero.size()-3, ultimoNumero.size())
+//        nrSequenciaPrestacao = novoNumero(nrSequenciaPrestacao)
+//        ultimoNumero = emprestimoCapital.nrProcesso+nrSequenciaPrestacao
+//        prestacaoCapitalParcela.setNumero(ultimoNumero)
+//        prestacaoCapitalParcela.setTipoPrestacao(tipoPrestacaoParcelaCapital)
+//        prestacaoCapitalParcela.setEmprestimo(emprestimoCapital)
+//        prestacaoCapitalParcela.setObservacao(obsCapital)
+//        prestacaoCapitalParcela.setDataModif(new Date())
+//        prestacaoCapitalParcela.setDataRegisto(new Date())
+//        prestacao.setUserModif(usuarioLogado())
+//        prestacaoCapitalParcela.setEstado('Pago')
+//        //Salvar prestacao capitalTotal
+//        prestacaoService.save(prestacaoCapitalParcela)
+//
+//        def novoCapital = emprestimoCapital.valorPedido - capitalParcela
+//
+//        //Cria o registro de auditoria
+//        def empAudit = new EmprestimoAuditoria()
+//        empAudit.setEmprestimo(emprestimoCapital)
+//        empAudit.setDataRegisto(new Date())
+//        empAudit.setCapitalAntigo(emprestimoCapital.capital)
+//        empAudit.setCapitalNovo(novoCapital)
+//        empAudit.setPrazoAntigo(emprestimoCapital.prazoPagamento)
+//        Calendar novoPrazo = Calendar.getInstance()
+//        novoPrazo.setTime(emprestimoCapital.prazoPagamento)
+//        novoPrazo.add(Calendar.MONTH, mesesExcepcao)
+//        Date dataNovoPrazo = novoPrazo.getTime()
+//        empAudit.setPrazoNovo(dataNovoPrazo)
+//        empAudit.setTipo('Recapitalizacao')
+//        empAudit.setUserResponsavel(usuarioLogado())
+//        emprestimoAuditoriaService.save(empAudit)
+//
+//        //Recapitalizacao
+//        emprestimoCapital.setValorPedido(novoCapital)
+//        emprestimoCapital.setValorApagar((novoCapital * (emprestimoCapital.taxaJuros/100))+novoCapital)
+//        emprestimoCapital.setDataModif(new Date())
+//        emprestimoCapital.setUserModif(usuarioLogado())
+//        emprestimoCapital.setPrazoPagamento(dataNovoPrazo)
+//
+//        //Ainda esta dentro do prazo
+//        if(dataPrazo > dataHoje){//Se nao for ultimo mes, cria a proxima prestacaoGeral
+//            def novaPrestacao = new Prestacao()
+//            novaPrestacao.setEstado('Pendente')
+//            novaPrestacao.setDataModif(new Date())
+//            novaPrestacao.setUserModif(usuarioLogado())
+//            novaPrestacao.setDataRegisto(new Date())
+//            novaPrestacao.setValor(novoCapital * (emprestimoCapital.taxaJuros/100))
+//
+//            Calendar limite = Calendar.getInstance()
+//            limite.setTime(prazo)
+//            limite.add(Calendar.MONTH, 1)
+//            dataNovoPrazo = limite.getTime()
+//
+//
+//            novaPrestacao.setDataLimite(dataNovoPrazo)//Prazo da Prestacao do proximo mes
+//            novaPrestacao.setEmprestimo(emprestimoCapital)
+//            ultimoNumero = emprestimoCapital.prestacoes.last().numero
+//            nrSequenciaPrestacao = ultimoNumero.substring(ultimoNumero.size()-3, ultimoNumero.size())
+//            nrSequenciaPrestacao = Integer.parseInt(nrSequenciaPrestacao) + 1
+//            nrSequenciaPrestacao = novoNumero(nrSequenciaPrestacao.toString())
+//            ultimoNumero = emprestimoCapital.nrProcesso+nrSequenciaPrestacao
+//            novaPrestacao.setNumero(ultimoNumero)
+//            novaPrestacao.setTipoPrestacao(tipoPrestacaoRendaNormal)
+//            prestacaoService.save(novaPrestacao)//Salvando a prestacaoGeral
+//        }else if(dataPrazo <= dataHoje){//Se for ultimo mes, verifica se ha excepcao, se houver, deve aumentar o prazo[Ainda nao tenho os controladores na view]
+//            if(!excepcao){//Nao ha excepcao
+//                //Muda o estado do emprestimo para "Vencido"
+//                emprestimoCapital.setEstado('Vencido')
+//                emprestimoCapital.setDataModif(new Date())
+//                emprestimoCapital.setUserModif(usuarioLogado())
+//                emprestimoService.save(emprestimoCapital)
+//            }
+//        }
+//        emprestimoService.save(emprestimoCapital)
     }
 
     //Este metodo permite ao cliente devolver todoo valor (Juros+Capital)
