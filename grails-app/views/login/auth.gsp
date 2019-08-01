@@ -16,7 +16,7 @@
                 <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
                 %{--<img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />--}%
                 %{--<asset:image src="avatar_2x.png" id="profile-img" class="profile-img-card"/>--}%
-                <asset:image src="logo.png" id="profile-img" class="img-rounded center-block" style="width: 75%"/>
+                <asset:image src="logo.jpg" id="profile-img" class="img-rounded center-block" style="width: 75%"/>
                 %{--<p id="profile-name" class="profile-name-card" style="color: #568c78">BEM VINDO</p>--}%
                 %{--<p id="profile-name" class="profile-name-card" style="color: #568c78">ACESSO A MICROCREDITO</p>--}%
 

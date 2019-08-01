@@ -35,6 +35,8 @@ class EmprestimoController {
     }
 
     def index(Integer max) {
+        println('index fader')
+
         def userPerfil = usuarioLogado().perfil.id
         def filtro = false
         def emprestimosCopia =  Emprestimo.createCriteria().list (){
@@ -182,15 +184,16 @@ class EmprestimoController {
     }
 
     def create() {
+        println('fader')
         respond new Emprestimo(params),
-        model: ['tipoDocumentoList': TipoDocumento,
-                'provinciaList':Provincia.list(), 'distritoList':Distrito.list(),
-                'modoPagamentoList':ModoPagamento.createCriteria().list {order('nrDias')},
-                'tipoCasaList':TipoCasa.list(),
-                'destinoCreditoList':DestinoCredito.list(),
-                'cliente': Cliente,
-                'avalistas':Cliente.createCriteria().list {eq('estado','Activo')}
-        ]
+                model: ['tipoDocumentoList': TipoDocumento,
+                        'provinciaList':Provincia.list(), 'distritoList':Distrito.list(),
+                        'modoPagamentoList':ModoPagamento.createCriteria().list {order('nrDias')},
+                        'tipoCasaList':TipoCasa.list(),
+                        'destinoCreditoList':DestinoCredito.list(),
+                        'cliente': Cliente,
+                        'avalistas':Cliente.createCriteria().list {eq('estado','Activo')}
+                ]
     }
 
     def save(Emprestimo emprestimo) {
@@ -275,7 +278,7 @@ class EmprestimoController {
         render(template: "/distrito/comboDistritos", model: ['distritos': distritos])
     }
 
-    
+
 
     def clientController = new ClienteController()
     def garantiaController = new GarantiaController()
@@ -323,7 +326,8 @@ class EmprestimoController {
         emprestimo.cliente = cliente
         emprestimo.testemunhas = params.testemunhas
 
-        emprestimo.modoPagamento = ModoPagamento.get(3)
+        def modoPagamento = ModoPagamento.findByDescricao(params.modoPagamento)
+        emprestimo.setModoPagamento(modoPagamento)
         emprestimo.nrProcesso = numeroProcesso(emprestimo)
         emprestimo.garantias = garantiaController.salvarGarantia(emprestimo)
         emprestimo.prestacoes = prestacaoController.salvarPrestacoes(emprestimo)

@@ -366,7 +366,7 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" style="background-color: rgba(0, 78, 5, 0.45);"><!--#00a65a73-->
+    <div class="content-wrapper" style="background-color: rgba(184,199,206,0.4);"><!--#00a65a73-->
     <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>

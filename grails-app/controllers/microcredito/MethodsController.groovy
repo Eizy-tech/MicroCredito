@@ -16,10 +16,7 @@ class MethodsController {
     def saltarDomingos(def date){
         Calendar calendar = Calendar.getInstance()
         calendar.setTime(date)
-        if(calendar.get(Calendar.DAY_OF_WEEK) == 1){
-            date = Date.parse("yyyy-MM-dd", (date + 1).format("yyyy-MM-dd"))
-        }
-        return date
+        (calendar.get(Calendar.DAY_OF_WEEK) == 1)?Date.parse("yyyy-MM-dd", (date + 1).format("yyyy-MM-dd")):date
     }
     def saltarDomingosVerificao(def date){
         Calendar calendar = Calendar.getInstance()
