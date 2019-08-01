@@ -79,6 +79,7 @@
                 <tr>
                     <td style="font-weight: bold; color: #000; font-size: medium; background-color: #ecf0f5">TOTAL:</td>
                     <td></td>
+                    <td></td>
                     <td style="font-weight: bold; color: #000; font-size: medium; background-color: #ecf0f5"><g:formatNumber
                             number="${emprestimoServic.somaValorPedido(emprestimosCopia)}" format="#,##0.00"/></td>
                     <td></td>

@@ -344,12 +344,14 @@
                                 success: function (data) {
                                     // window.location ='/categoriaEntidade/show/'+data.categoria.id;
                                     alert('Sucesso: '+data.msg);
+                                    location.reload();
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
-                                    $('#btnSalvarParcelaCapital').modal('hide');
+                                    // $('#btnSalvarParcelaCapital').modal('hide');
                                 },
                                 error: function (data) {
                                     alert('Erro: '+data.msg);
+                                    location.reload();
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
                                 }
