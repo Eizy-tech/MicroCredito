@@ -60,6 +60,10 @@ class Emprestimo1Service {
                 }
             }
         }
+        if(emprestimo.modoPagamento.id==3 && !emprestimo.estado.equalsIgnoreCase('Aberto')){
+            divida += emprestimo.valorPedido
+        }
+
         return divida
     }
 

@@ -37,8 +37,8 @@ class EmprestimoController {
     def index(Integer max) {
         println('index fader agora')
 
-        IreportController ireportController = new IreportController('D:/')
-        ireportController.pdfContratoExclusive(Emprestimo.get(11)) //gera contrato
+//        IreportController ireportController = new IreportController('D:/')
+//        ireportController.pdfContratoExclusive(Emprestimo.get(11)) //gera contrato
 
         def userPerfil = usuarioLogado().perfil.id
         def filtro = false
