@@ -1,5 +1,6 @@
 package microcredito
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.json.JsonSlurper
@@ -9,7 +10,7 @@ import java.text.SimpleDateFormat
 
 import static org.springframework.http.HttpStatus.*
 
-@Secured(['ROLE_ADMIN' , 'ROLE_USER'])
+@Secured(['ROLE_ADMIN', 'ROLE_USER'])
 class PrestacaoController {
 
     PrestacaoService prestacaoService
@@ -44,7 +45,7 @@ class PrestacaoController {
     def idEmprestimoo = 0
     def excepcao = false
     def mesesExcepcao = 0
-    def meioPagJuros =''
+    def meioPagJuros = ''
     def userModif = null
     def idPrestacao = 0
     Prestacao prestacaoGeral = null
@@ -62,12 +63,12 @@ class PrestacaoController {
     def nrSequenciaPrestacao = ''
 
 
-    def usuarioLogado(){
-        def user = (User)springSecurityService.currentUser
+    def usuarioLogado() {
+        def user = (User) springSecurityService.currentUser
         return user
     }
 
-    def validacao(){
+    def validacao() {
 
         def criteria = Prestacao.createCriteria()
 
@@ -78,7 +79,7 @@ class PrestacaoController {
         render(view: "validacao", model: [prestacoes: prestacoes])
     }
 
-    def validarPagamento(){
+    def validarPagamento() {
         String jsonObject = request.JSON
         def parametros = new JsonSlurper().parseText(jsonObject)
         userModif = usuarioLogado()
@@ -90,7 +91,7 @@ class PrestacaoController {
         prestacaoService.save(prestacao)
     }
 
-    def pagamento(){//NOVA VERSAO (EXCLUSIVE)
+    def pagamento() {//NOVA VERSAO (EXCLUSIVE)
         def emprestimo = Emprestimo.get(params.cred)// 'cred eh o id do emprestimo/credito que vem da listagem'
         def criterio = Prestacao.createCriteria()
         def prestacoes = criterio.list {
@@ -107,12 +108,12 @@ class PrestacaoController {
             eq('estado', 'Activo')
         }
 
-        respond emprestimo, model: [prestacoes: prestacoes, meiosPagamento:meioPagamentoService.list(), contas: contas]
+        respond emprestimo, model: [prestacoes: prestacoes, meiosPagamento: meioPagamentoService.list(), contas: contas]
         //redirect(action: 'pagamento', model: [prestacoes: prestacoes, meiosPagamento:meioPagamentoService.list()])
 
     }
 
-    def pagamentos () { //Aqui e realizado o registo de pagamentos
+    def pagamentos() { //Aqui e realizado o registo de pagamentos
 
 
         String jsonObject = request.JSON
@@ -148,30 +149,30 @@ class PrestacaoController {
         }
 
         println(haCapital)
-        if(haCapital){//Trata-se de modo mensal
+        if (haCapital) {//Trata-se de modo mensal
             println('Ha capital')
-            if(pagaCapital){//Vai pagar o capital Tambem
-                if(capitalParcela == 0){//Vai pagar todoo capital
+            if (pagaCapital) {//Vai pagar o capital Tambem
+                if (capitalParcela == 0) {//Vai pagar todoo capital
                     pagarCapitalTotaL(prestacaoGeral)
 //                    println('Vai pagar todoo capital')
-                }else if(capitalParcela > 0){// Vai pagar parte do Capital
+                } else if (capitalParcela > 0) {// Vai pagar parte do Capital
                     pagarCapitalParcela(prestacaoGeral)
 //                    println('Vai pagar parcela do capital')
                 }
-            }else{//So vai pagar a taxa de juros e/ou multa
-                if(haJuros){
-                    if(valParcelaAux == 0){//Vai Pagar a prestacao (Juros) na totalidade
+            } else {//So vai pagar a taxa de juros e/ou multa
+                if (haJuros) {
+                    if (valParcelaAux == 0) {//Vai Pagar a prestacao (Juros) na totalidade
                         pagarPrestacaoJuros(prestacaoGeral)
-                    }else{//Vai pagar uma parcela da prestacaoGeral
-                         pagarParcelaDaPrestacaoJuros(prestacaoGeral)
+                    } else {//Vai pagar uma parcela da prestacaoGeral
+                        pagarParcelaDaPrestacaoJuros(prestacaoGeral)
                     }
                 }
             }
-        }else{//Trata-se de pagamentos normais, modalidades diferentes de mensais
+        } else {//Trata-se de pagamentos normais, modalidades diferentes de mensais
             println('Nao Ha capital')
             for (linhaSubArray in pagamentoPrestacoes) {
                 valParcelaAux = linhaSubArray[2]
-                if (valParcelaAux > 0){//Valor da Parcela existe
+                if (valParcelaAux > 0) {//Valor da Parcela existe
                     prestacaoGeral = prestacaoService.get(Integer.parseInt(linhaSubArray[0]))
                     def meioPag = MeioPagamento.findByDescricao(linhaSubArray[1].toString())
                     def user = usuarioLogado()
@@ -180,10 +181,10 @@ class PrestacaoController {
                     def observacao = linhaSubArray[3].toString()
                     def tipoPrestacaoParcela = TipoPrestacao.get(3)//Tipo 'Parcela'
 
-                    if (valorOrigem > valorParcela){
+                    if (valorOrigem > valorParcela) {
                         prestacao1Service.pagarParcela(prestacaoGeral, meioPag, user, "Pago", valorParcela, tipoPrestacaoParcela, observacao)
                     }
-                }else{//Paga Prestacao na totalidade
+                } else {//Paga Prestacao na totalidade
                     prestacaoGeral = prestacaoService.get(Integer.parseInt(linhaSubArray[0]))
                     def meioPag = MeioPagamento.findByDescricao(linhaSubArray[1].toString())
                     userModif = usuarioLogado()
@@ -193,18 +194,18 @@ class PrestacaoController {
             }
         } //Diferentes de mensais
 
-        render(view: "create", model:[clienteList: clienteService.list(params), clienteCount: clienteService.count(), emprestimoFechadoOuNao: emprestimoFechadoOuNao])
+        render(view: "create", model: [clienteList: clienteService.list(params), clienteCount: clienteService.count(), emprestimoFechadoOuNao: emprestimoFechadoOuNao])
 //                respond clienteService.list(params), model:[clienteCount: clienteService.count(), emprestimoFechadoOuNao: emprestimoFechadoOuNao]
     }
 
     //Prestacao do proximo mes
-    def proximaPrestacao(Prestacao prestacao){
+    def proximaPrestacao(Prestacao prestacao) {
         def novaPrestacao = new Prestacao()
         novaPrestacao.setEstado('Pendente')
         novaPrestacao.setDataModif(new Date())
         novaPrestacao.setUserModif(usuarioLogado())
         novaPrestacao.setDataRegisto(new Date())
-        novaPrestacao.setValor((emprestimoCapital.valorPedido * (emprestimoCapital.taxaJuros/100)))
+        novaPrestacao.setValor((emprestimoCapital.valorPedido * (emprestimoCapital.taxaJuros / 100)))
         Calendar limite = Calendar.getInstance()
         limite.setTime(prestacao.dataLimite)
         limite.add(Calendar.MONTH, 1)
@@ -222,20 +223,21 @@ class PrestacaoController {
     }
 
     //Este metodo regista a prestacao (Juros) e a multa caso exista
-    def pagarPrestacaoJuros(Prestacao prestacao){
-        if(haMulta){
+    def pagarPrestacaoJuros(Prestacao prestacao) {
+        if (haMulta) {
             //Fazer o pagamento da multa
             pagarMulta()
         }
-        if(dataPrazo >= dataHoje){//Se nao for ultimo mes, paga esta, cria a proxima e continua
+        if (dataPrazo >= dataHoje) {//Se nao for ultimo mes, paga esta, cria a proxima e continua
             //Pagamento da prestacaoGeral (Multa)
             prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
 
             //Geracao da proxima prestacaoGeral
             proximaPrestacao(prestacao)
 
-        }else if(dataPrazo < dataHoje){//Se for ultimo mes, verifica se ha excepcao, se houver, deve aumentar o prazo[Ainda nao tenho os controladores na view]
-            if(excepcao){//Ha excepcao
+        } else if (dataPrazo < dataHoje) {
+//Se for ultimo mes, verifica se ha excepcao, se houver, deve aumentar o prazo[Ainda nao tenho os controladores na view]
+            if (excepcao) {//Ha excepcao
                 //Paga este juros (Renda Normal)
                 prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
 
@@ -245,7 +247,7 @@ class PrestacaoController {
                 //Cria o registro de auditoria
                 def empAudit = new EmprestimoAuditoria()
                 empAudit.setEmprestimo(emprestimoCapital)
-                empAudit.setObservacao('A empresa da mais '+mesesExcepcao+' mes(es) ao cliente.')
+                empAudit.setObservacao('A empresa da mais ' + mesesExcepcao + ' mes(es) ao cliente.')
                 empAudit.setDataRegisto(new Date())
                 empAudit.setCapitalAntigo(emprestimoCapital.capital)
                 empAudit.setCapitalNovo(emprestimoCapital.capital)
@@ -267,7 +269,7 @@ class PrestacaoController {
                 emprestimoCapital.setUserModif(usuarioLogado())
                 emprestimoService.save(emprestimoCapital)
 
-            }else{//Nao Ha excepcao [Ainda falta tratar, e como fica o emprestimo]
+            } else {//Nao Ha excepcao [Ainda falta tratar, e como fica o emprestimo]
                 //Paga a prestacaoGeral
                 prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
 
@@ -281,8 +283,8 @@ class PrestacaoController {
     }
 
     //Este metodo vai pagar uma parcecela da prestacaoGeral
-    def pagarParcelaDaPrestacaoJuros(Prestacao prestacao){
-        if(haMulta){//Se tiver multa, PAGA!
+    def pagarParcelaDaPrestacaoJuros(Prestacao prestacao) {
+        if (haMulta) {//Se tiver multa, PAGA!
             //Fazer o pagamento da multa
             pagarMulta()
         }
@@ -299,21 +301,21 @@ class PrestacaoController {
         def numParcela = ''
         def parcelasAnteriores = 0
         prestacao.prestacoes.each {
-            if (it.tipoPrestacao == tipoPrestacaoParcela){
-                parcelasAnteriores +=1
+            if (it.tipoPrestacao == tipoPrestacaoParcela) {
+                parcelasAnteriores += 1
             }
         }
-        numParcela = ''+parcelasAnteriores
-        if (numParcela.size()==1){
-            numParcela = '00'+numParcela
+        numParcela = '' + parcelasAnteriores
+        if (numParcela.size() == 1) {
+            numParcela = '00' + numParcela
         }
-        if (numParcela.size()==2){
-            numParcela = '0'+numParcela
+        if (numParcela.size() == 2) {
+            numParcela = '0' + numParcela
         }
-        if (numParcela.size()==3){
-            numParcela = ''+numParcela
+        if (numParcela.size() == 3) {
+            numParcela = '' + numParcela
         }
-        parcelaJuros.setNumero(prestacao.numero+numParcela)
+        parcelaJuros.setNumero(prestacao.numero + numParcela)
         parcelaJuros.setDataLimite(new Date())
         parcelaJuros.setValor(valParcelaAux)
         def meioPag = MeioPagamento.findByDescricao(meioPagJuros.toString())
@@ -327,12 +329,104 @@ class PrestacaoController {
 
     //Este metodo permite ao cliente devolver parte do valor (Juros+Capital)
 //    def pagarCapitalParcela(Prestacao prestacao){
-    def pagarCapitalParcela(){
-        println(params.idEmp)
-        println(params.valorParcela)
-        println(params.obs)
+    def pagarCapitalParcela() {
+        def nrSequenciaPrestac
+        def ultimoNumero
+        def prestacoesTodasPagas = true
+        def msg = [:]
+        def valorParcela = Double.parseDouble(params.valorParcela)
+        def observacao = params.obs
 
-        render('')
+        Emprestimo emprestimoDefaut = Emprestimo.get(Integer.parseInt(params.idEmp))
+        EmprestimoAuditoria emprestimoAuditoria
+        Prestacao prestacaoCapital = new Prestacao()
+
+        if (emprestimoDefaut.valorPedido < valorParcela || valorParcela < 0) {
+            msg['msg'] = 'O valor informado não deve ser maior que o capital actual ou menor que zero.'
+        } else {
+            //Para numero de prestacao
+            ultimoNumero = emprestimoDefaut.prestacoes.last().numero
+            nrSequenciaPrestac = ultimoNumero.substring(ultimoNumero.size() - 3, ultimoNumero.size())
+            nrSequenciaPrestac = Integer.parseInt(nrSequenciaPrestac)
+            nrSequenciaPrestac = novoNumero(nrSequenciaPrestac.toString())
+
+            //A prestacao a ser salva
+            prestacaoCapital.setEstado('Pago')
+            prestacaoCapital.setUserRegisto(usuarioLogado())
+            prestacaoCapital.setUserModif(usuarioLogado())
+            prestacaoCapital.setDataRegisto(new Date())
+            prestacaoCapital.setDataModif(new Date())
+            prestacaoCapital.setObservacao(observacao)
+            prestacaoCapital.setEmprestimo(emprestimoDefaut)
+            prestacaoCapital.setTipoPrestacao(TipoPrestacao.get(5))
+            prestacaoCapital.setNumero(emprestimoDefaut.nrProcesso + nrSequenciaPrestac)
+            prestacaoCapital.setDataLimite(new Date())
+            prestacaoCapital.setValor(valorParcela)
+
+            //Verificacao se todas prestacoes foram pagas
+            emprestimoDefaut.prestacoes.each {
+                if (it.estado.equalsIgnoreCase('Pago') || it.estado.equalsIgnoreCase('Validado')) {
+                    // A prestacao esta baga
+                } else {
+                    prestacoesTodasPagas = false
+                }
+            }
+
+            //Muda estado do emprestimo
+            if (prestacoesTodasPagas) {//Todas prestacoes pagas
+
+                if (valorParcela >= emprestimoDefaut.valorPedido) {
+                    //Capital a ser paga na totalidade (O estado muda para 'Fechado' e nao cria auditoria)
+                    emprestimoDefaut.setEstado('Fechado')
+                    //Sera actualizado no momento do registo da parcela
+                } else {//Capital a ser paga na parcela
+                    // Se nao For reducao na totalidade
+                    //Auditoria
+                    emprestimoAuditoria = emprestimoDefaut
+                    emprestimoAuditoria.setEmprestimo(emprestimoDefaut)
+                    emprestimoAuditoria.setObservacao('Reducao do capital')
+                    emprestimoAuditoria.setDataRegisto(new Date())
+                    emprestimoAuditoria.setTipo('Reducao_Capital')
+                    emprestimoAuditoria.setPrestacao(prestacaoCapital)
+                    emprestimoAuditoria.setCapitalNovo(emprestimoDefaut.valorPedido - valorParcela)
+                    emprestimoAuditoria.setUserResponsavel(usuarioLogado())
+                    emprestimoAuditoria.setVersion(0)
+                    emprestimoDefaut.setValorPedido(emprestimoDefaut.valorPedido - valorParcela)
+                    emprestimoDefaut.setObservacao(emprestimoDefaut.observacao + '\nCapital Reduzido.')
+                    //Sera salvo no momento do registo da parcela
+                }
+            }else{
+                emprestimoAuditoria = new EmprestimoAuditoria()
+                emprestimoAuditoria.setPrazoNovo(emprestimoDefaut.prazoPagamento)
+                emprestimoAuditoria.setPrazoAntigo(emprestimoDefaut.prazoPagamento)
+                emprestimoAuditoria.setCapitalAntigo(emprestimoDefaut.capital)
+                emprestimoAuditoria.setEmprestimo(emprestimoDefaut)
+                emprestimoAuditoria.setObservacao('Reducao do capital')
+                emprestimoAuditoria.setDataRegisto(new Date())
+                emprestimoAuditoria.setTipo('Reducao_Capital')
+                emprestimoAuditoria.setPrestacao(prestacaoCapital)
+                emprestimoAuditoria.setCapitalNovo(emprestimoDefaut.valorPedido - valorParcela)
+                emprestimoAuditoria.setUserResponsavel(usuarioLogado())
+                emprestimoAuditoria.setVersion(0)
+                emprestimoDefaut.setValorPedido(emprestimoDefaut.valorPedido - valorParcela)
+                emprestimoDefaut.setObservacao(emprestimoDefaut.observacao + '\nCapital Reduzido.')
+            }
+        }
+
+        try {
+//            println('Prestacao: ' + prestacaoCapital.save(flush: true))
+            println('Prestacao: ' + prestacaoService.save(prestacaoCapital))
+
+            println('Default: ' + emprestimoDefaut.save(flush: true))
+            emprestimoAuditoria.id = null
+            println('Audit: ' + emprestimoAuditoria.save(flush: true))
+            msg['msg'] = 'Salvo com sucesso'
+        } catch (Exception e) {
+            msg['msg'] = 'Erro: \n' + e.getMessage() + '\nContacte um técnico.'
+        }
+
+
+        render msg as JSON
 
 
 ////        prestacaoGeral = this.prestacaoGeral
@@ -433,14 +527,14 @@ class PrestacaoController {
     }
 
     //Este metodo permite ao cliente devolver todoo valor (Juros+Capital)
-    def pagarCapitalTotaL(Prestacao prestacao){
+    def pagarCapitalTotaL(Prestacao prestacao) {
         //Se tiver multa vai pagar
-        if(haMulta){//Se tiver multa, PAGA!
+        if (haMulta) {//Se tiver multa, PAGA!
             //Fazer o pagamento da multa
             pagarMulta()
         }
         //Se tiver Juros vai pagar
-        if(haJuros){
+        if (haJuros) {
             //Pagamento da prestacaoGeral (Multa)
             prestacao1Service.pagarNormal(prestacao, MeioPagamento.findByDescricao(meioPagJuros.toString()), userModif, "Pago")
         }
@@ -454,12 +548,12 @@ class PrestacaoController {
 
         def ultimoNumero = emprestimoCapital.prestacoes.last().numero
 
-        def nrSequenciaPrestac = ultimoNumero.substring(ultimoNumero.size()-3, ultimoNumero.size())
+        def nrSequenciaPrestac = ultimoNumero.substring(ultimoNumero.size() - 3, ultimoNumero.size())
         nrSequenciaPrestac = Integer.parseInt(nrSequenciaPrestac)
         nrSequenciaPrestac = novoNumero(nrSequenciaPrestac.toString())
 
 
-        prestacaoCapital.setNumero(emprestimoCapital.nrProcesso+nrSequenciaPrestac)
+        prestacaoCapital.setNumero(emprestimoCapital.nrProcesso + nrSequenciaPrestac)
         prestacaoCapital.setTipoPrestacao(tipoPrestacaoCapital)
         prestacaoCapital.setEmprestimo(emprestimoCapital)
         prestacaoCapital.setObservacao(obsCapital)
@@ -479,38 +573,38 @@ class PrestacaoController {
     }
 
     //Devolve o proximo numero
-    def novoNumero(String nrPrestacao3Digitos){
+    def novoNumero(String nrPrestacao3Digitos) {
         def resultado = ''
         def stringCovertidaInt = Integer.parseInt(nrPrestacao3Digitos)
 
         stringCovertidaInt = stringCovertidaInt + 1
         def stringDeVolta = stringCovertidaInt.toString()
-        if(stringDeVolta.size() == 3){
+        if (stringDeVolta.size() == 3) {
             resultado = stringDeVolta
         }
-        if(stringDeVolta.size() == 2){
-            resultado = '0'+stringDeVolta
+        if (stringDeVolta.size() == 2) {
+            resultado = '0' + stringDeVolta
         }
-        if(stringDeVolta.size() == 1){
-            resultado = '00'+stringDeVolta
+        if (stringDeVolta.size() == 1) {
+            resultado = '00' + stringDeVolta
         }
 
         return resultado
     }
 
     //Pagamento da Multa
-    def pagarMulta(){
+    def pagarMulta() {
 
     }
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond prestacaoService.list(params), model:[prestacaoCount: prestacaoService.count()]
+        respond prestacaoService.list(params), model: [prestacaoCount: prestacaoService.count()]
     }
 
     def index1(Integer max) {
         params.max = Math.min(max ?: 8, 100)
-        respond prestacaoService.list(params), model:[prestacaoCount: prestacaoService.count()]
+        respond prestacaoService.list(params), model: [prestacaoCount: prestacaoService.count()]
     }
 
     def show(Long id) {
@@ -518,7 +612,7 @@ class PrestacaoController {
 //        Prestacao.
     }
 
-    def prestacoesEmprestimo (Long emprestimoId) {//Listagem de prestacoes de um emprestimo
+    def prestacoesEmprestimo(Long emprestimoId) {//Listagem de prestacoes de um emprestimo
         Emprestimo emprestimo = Emprestimo.get(emprestimoId)
         def criterio = Prestacao.createCriteria()
         def prestacoes = criterio.list {
@@ -530,20 +624,21 @@ class PrestacaoController {
             }
             order("dataLimite", "asc")
         }
-        render(template:"/prestacao/prestacoess.gsp",model:[meiosPagamento:meioPagamentoService.list(), prestacoes: prestacoes, emprestimo: emprestimo])// ByEmprestimo(emprestimo)])
+        render(template: "/prestacao/prestacoess.gsp", model: [meiosPagamento: meioPagamentoService.list(), prestacoes: prestacoes, emprestimo: emprestimo])
+// ByEmprestimo(emprestimo)])
     }
 
     def create(Integer max) {
         params.max = Math.min(max ?: 7, 100)
-        def emprestimoFechadoOuNao =  false
-        def emprestimos = Emprestimo.createCriteria().list (max: params.max, offset: params.offset){
+        def emprestimoFechadoOuNao = false
+        def emprestimos = Emprestimo.createCriteria().list(max: params.max, offset: params.offset) {
             or {
                 eq('estado', 'Aberto')
                 eq('estado', 'Vencido')
             }
             order("prazoPagamento")
         }
-        respond emprestimos, model:[emprestimos: emprestimos, emprestimoCount: emprestimos.totalCount, emprestimoFechadoOuNao: emprestimoFechadoOuNao]
+        respond emprestimos, model: [emprestimos: emprestimos, emprestimoCount: emprestimos.totalCount, emprestimoFechadoOuNao: emprestimoFechadoOuNao]
     }
 
     def save(Prestacao prestacao) {
@@ -554,7 +649,7 @@ class PrestacaoController {
         try {
             prestacaoService.save(prestacao)
         } catch (ValidationException e) {
-            respond prestacao.errors, view:'create'
+            respond prestacao.errors, view: 'create'
             return
         }
 
@@ -580,7 +675,7 @@ class PrestacaoController {
         try {
             prestacaoService.save(prestacao)
         } catch (ValidationException e) {
-            respond prestacao.errors, view:'edit'
+            respond prestacao.errors, view: 'edit'
             return
         }
 
@@ -589,7 +684,7 @@ class PrestacaoController {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'prestacaoGeral.label', default: 'Prestacao'), prestacao.id])
                 redirect prestacao
             }
-            '*'{ respond prestacao, [status: OK] }
+            '*' { respond prestacao, [status: OK] }
         }
     }
 
@@ -604,9 +699,9 @@ class PrestacaoController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'prestacaoGeral.label', default: 'Prestacao'), id])
-                redirect action:"index", method:"GET"
+                redirect action: "index", method: "GET"
             }
-            '*'{ render status: NO_CONTENT }
+            '*' { render status: NO_CONTENT }
         }
     }
 
@@ -616,7 +711,7 @@ class PrestacaoController {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'prestacaoGeral.label', default: 'Prestacao'), params.id])
                 redirect action: "index", method: "GET"
             }
-            '*'{ render status: NOT_FOUND }
+            '*' { render status: NOT_FOUND }
         }
     }
 
@@ -629,28 +724,29 @@ class PrestacaoController {
         Calendar calendar = Calendar.getInstance()
         calendar.setTime(emprestimo.dataInicioPagamento)
         def limite
-        while (contador < emprestimo.nrPrestacoes+1) {
+        while (contador < emprestimo.nrPrestacoes + 1) {
             limite = calendar.getTime()
             Prestacao prestacao = new Prestacao()
             prestacao.valor = params.valorPorPrestacao.toDouble()
             prestacao.estado = "Pendente"
             def zeros = (3 - (contador.toString().length()))
-            prestacao.numero = emprestimo.nrProcesso+methods.retornaZeros(zeros)+contador
+            prestacao.numero = emprestimo.nrProcesso + methods.retornaZeros(zeros) + contador
             prestacao.emprestimo = emprestimo
             prestacao.setDataRegisto(emprestimo.dataRegisto)
             prestacao.setDataModif(emprestimo.dataModif)
             prestacao.setUserRegisto(emprestimo.userRegisto)
             prestacao.setUserModif(emprestimo.userRegisto)
-            prestacao.dataLimite =  methods.saltarDomingos(Date.parse("yyyy-MM-dd", (limite).format("yyyy-MM-dd")))
+            prestacao.dataLimite = methods.saltarDomingos(Date.parse("yyyy-MM-dd", (limite).format("yyyy-MM-dd")))
             prestacao.tipoPrestacao = TipoPrestacao.get(1)
             prestacaoList.add(prestacao)
-            contador+=1
+            contador += 1
             calendar.add(Calendar.MONTH, 1)
         }
         return prestacaoList
     }
 
     IreportController ireportController = new IreportController()
+
     def pagamentos3() { //Aqui e realizado o registo de pagamentos
 
         def idPrestacao = 0;
@@ -668,7 +764,7 @@ class PrestacaoController {
         def pagamentoPrestacoes = new JsonSlurper().parseText(jsonObject)
         userModif = usuarioLogado()
         def l1 = pagamentoPrestacoes[0]
-        def  idP1 = l1[0]
+        def idP1 = l1[0]
         def emprestimo = Prestacao.get(idP1).emprestimo
 
         for (linhaSubArray in pagamentoPrestacoes) {
@@ -706,12 +802,12 @@ class PrestacaoController {
             }
         }
 
-        ireportController.pdfRecibo(emprestimo,prestacaoListRecibo)
+        ireportController.pdfRecibo(emprestimo, prestacaoListRecibo)
         methods.backupDB()
     }
 
-    @Secured(['ROLE_ADMIN' , 'ROLE_USER'])
-    def verRecibo(){
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    def verRecibo() {
         def ficha = new File(IreportController.reciboDir)
         render(file: ficha, contentType: 'application/pdf')
     }
