@@ -113,14 +113,14 @@ class IreportController {
                 "\n\n"
         )
 
-        contratoExclusive.setTxtCliente("<p><b>E,</b></p><b>"+cliente.nome+'</b>, de nacionalidade Moçambicana, natural de '+cliente.naturalidade +
+        contratoExclusive.setTxtCliente("<p><center><b>E,</b></center></p><b>"+cliente.nome+'</b>, de nacionalidade Moçambicana, natural de '+cliente.naturalidade +
                 '\nportador do <b>'+cliente.tipoDocumento.descricao+'</b> nº \n'+cliente.nrDocumento+', emitido em '+cliente.localEmissao+'\naos '
                 +methods.formatData(cliente.dataEmissao)+
                 ' adiante designada por <b>MUTUÁRIA</b> têm entre si, justo e contratado, o seguinte:'
         )
 
         contratoExclusive.setTxtObjecto(
-                'I - O MUTUANTE concede ao MUTUÁRIO, neste acto, um crédito de <b>' + String.format("%,.2f", emprestimo.valorPedido) + ' Mt (' + valorPedidoExtenso.trim() + ').</b>'
+                'I - O MUTUANTE concede <br> ao MUTUÁRIO,'+'&#13;'+'neste acto, &#10; um crédito de <b>' + String.format("%,.2f", emprestimo.valorPedido) + ' Mt (' + valorPedidoExtenso.trim() + ').</b>'
         )
 
         contratoExclusive.setTxtObrigacao(
