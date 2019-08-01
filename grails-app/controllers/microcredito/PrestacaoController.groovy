@@ -707,7 +707,7 @@ class PrestacaoController {
                 prestacao.setUserModif(emprestimo.userRegisto)
                 prestacao.setDataRegisto(new Date())
                 prestacao.setDataModif(new Date())
-                prestacao.setValor(emprestimo.getCapital())
+                prestacao.setValor(emprestimo.getValorPedido())
                 prestacao.setEstado('Pendente')
                 prestacao.setNumero(emprestimo.nrProcesso + methods.retornaZeros(zeros) + i)
                 prestacao.setDataLimite(emprestimo.getPrazoPagamento())
