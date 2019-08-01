@@ -17,7 +17,7 @@
         %{--</g:link>--}%
         %{--<a target="_blank" href="/emprestimo/verRecibo/recibo" id="reciboBtn">Rec</a>--}%
 
-        <div class="box box-success" style="background-color: white">
+        <div class="box box-primary" style="background-color: white">
             <div class="box-header" style="background-color: #ecf0f5">
                 <h3 class="box-title"><i class="fa fa-list"></i><strong>&nbsp;Prestações não pagas</strong></h3>
             </div>
@@ -30,20 +30,30 @@
                                 Cliente: <b class="pull-right">${emprestimo.cliente.nome}</b>
                             </a>
                             <a class="list-group-item">
-                                Emprestimo(Nº do processo): <b class="pull-right">${emprestimo.nrProcesso}</b>
+                                Nº do processo: <b class="pull-right">${emprestimo.nrProcesso} - ${emprestimo.modoPagamento.descricao}</b>
                             </a>
                             <a class="list-group-item">
                                 Capital: <b class="pull-right"><g:formatNumber number="${emprestimo.valorPedido}"
                                                                                format="#,##0.00"/></b>
                             </a>
                             <a class="list-group-item">
-                                Renda Normal: <b class="pull-right">
-                                <g:formatNumber number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}"
-                                                format="#,##0.00"/></b>
+                                Taxa de juros: <b class="pull-right"><g:formatNumber number="${emprestimo.taxaJuros}"
+                                                                                     format="#"/>%  </b>
+                            </a>
+                            <a class="list-group-item">
+                                <g:if test="${emprestimo.modoPagamento.descricao == "Mensal"}">
+                                    Juros:
+                                </g:if>
+                                <g:else>
+                                    Renda Normal:
+                                </g:else>
+                                <b class="pull-right">
+                                    <g:formatNumber number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}" format="#,##0.00"/>
+                                </b>
                             </a>
                             <a class="list-group-item">Valor a pagar: <b class="pull-right">
                                 <g:formatNumber
-                                        number="${emprestimo.valorPedido + (emprestimo.valorPedido * (emprestimo.taxaJuros / 100))}"
+                                        number="${emprestimo.valorPedido + emprestimoServic.somaPrestacoesDivida(emprestimo)}"
                                         format="#,##0.00"/></b>
                             </a>
                             <a class="list-group-item">

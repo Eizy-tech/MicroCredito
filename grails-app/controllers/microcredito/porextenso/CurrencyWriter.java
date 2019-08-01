@@ -257,7 +257,7 @@ public class CurrencyWriter {
 	private void preencherNomes() {
 		nomes.put(1, "um");
 		nomes.put(2, "dois");
-		nomes.put(3, "três");
+		nomes.put(3, "tres");
 		nomes.put(4, "quatro");
 		nomes.put(5, "cinco");
 		nomes.put(6, "seis");

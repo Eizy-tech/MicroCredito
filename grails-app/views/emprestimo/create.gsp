@@ -742,6 +742,9 @@
             valorPorPrestacao = valorApagar / nrPrestacoes;                //caculo de valor a pagar por prestacao
             if(modoPagamento === 'Mensal'){
                 $('#valorPorPrestacao').val(parseFloat(valorPedido * percent));
+
+                valorTotalMensal = parseFloat(valorPedido) + parseFloat(valorPedido * percent *nrPrestacoes);
+                $('#valorApagar').val(valorTotalMensal.toFixed(2));
             }else{
                 if (nrPrestacoes === '') {
                     $('#valorPorPrestacao').val(valorApagar.toFixed(2))

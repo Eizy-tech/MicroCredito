@@ -16,6 +16,7 @@ class IreportController {
     def jasperDir = 'D:/Dropbox/Microcredito/jasper/'
     def pdfDestino = ''
     def methods = new MethodsController()
+    def cw = CurrencyWriter.getInstance()
 
     IreportController(pdfDestino) {
         this.pdfDestino = pdfDestino
@@ -40,35 +41,37 @@ class IreportController {
     }
 
     class IreportContratoExclusive {
-        String dados, txtPrimeira, txtSegunda, txtTerceira, txtQuarta, txtQuinta, txtSexta, txtSetima, txtOitava, txtNona, txtCliente, logo, userAndDate,data
+        String txtDados, txtObjecto, txtObrigacao, txtGarantia, txtQuarta, txtQuinta, txtSexta, txtSetima, txtOitava, txtNona, txtCliente, logo, userAndDate,data
     }
 
     def parcelas(Emprestimo emprestimo){
         def parcelas =''
+        def exte = porExtenso(cw.write(new BigDecimal(Double.parseDouble(emprestimo.nrPrestacoes.toString()))))
+
         if(emprestimo.nrPrestacoes > 1){
+
             if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('diaria')){
-                parcelas = emprestimo.nrPrestacoes+' diárias, pagáveis diárias'
+                parcelas = 'diárias, pagáveis diárias'
             }
 
             if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('semanal')){
-                parcelas = emprestimo.nrPrestacoes+' semanais, pagáveis semanais'
+                parcelas = 'semanais, pagáveis semanais'
             }
 
             if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('quinzenal')){
-                parcelas = emprestimo.nrPrestacoes+' quinzenais, pagáveis quinzenais'
+                parcelas = 'quinzenais, pagáveis quinzenais'
             }
 
             if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('mensal')){
-                parcelas = emprestimo.nrPrestacoes+' mensais, pagáveis mensais'
+                parcelas = 'mensais, pagáveis mensais'
             }
         }
-        return parcelas
+        return emprestimo.nrPrestacoes+' ('+exte+')'+ 'parcelas '+parcelas
     }
 
     def pdfContratoExclusiveFrente(Emprestimo emprestimo) {
         def microcredito = MicroCredito.get(1)
         def cliente = emprestimo.cliente
-        CurrencyWriter cw = CurrencyWriter.getInstance()
         def valorPedidoExtenso = porExtenso(cw.write(new BigDecimal(emprestimo.valorPedido.toString())))
         def valorAPagarExtenso = porExtenso(cw.write(new BigDecimal(emprestimo.valorApagar.toString())))
 
@@ -88,9 +91,9 @@ class IreportController {
         def garantias = emprestimo.garantias
         garantias.each {
             if ((it.tipoGarantia.descricao.trim().charAt(it.tipoGarantia.descricao.length() - 1)).toString().equalsIgnoreCase('a')) {
-                bens += '1(uma) ' + it.tipoGarantia.descricao + it.descricao + '\n'
+                bens += '<p>✓ 1(uma) ' + it.tipoGarantia.descricao + it.descricao + '\n</p>'
             } else {
-                bens += '1(um) ' + it.tipoGarantia.descricao + it.descricao + '\n'
+                bens += '<p>✓ 1(um) ' + it.tipoGarantia.descricao + it.descricao + '\n</p>'
             }
         }
 
@@ -103,43 +106,31 @@ class IreportController {
             srOrsra = 'Sr, '
         }
 
-
-        contratoExclusive.setDados("<b>Prosperidade Microcrédito E.I</b>, com sede no Bairro Central, "+microcredito.endereco+
-                "<b>\nCidade de Maputo</b>, registadp na Conservátoria de Registos Legais de Maputo, sob número " +
-                "\n 101097439, representada pelo seu representante, <b>"+microcredito.mutuante+", adiante designado por <b>MUTUANTE,\n \n" +
-                "E,</b>"
+        contratoExclusive.setTxtDados("<p><b>Entre</b></p>\n" +
+                "<b>Prosperidade Microcrédito E.I</b>, com sede no, "+microcredito.endereco+
+                ", <b>\nCidade de Maputo</b>, registado na Conservátoria de Registos Legais de Maputo, sob número " +
+                "\n 101097439, representada pelo seu representante, <b>"+microcredito.mutuante+"</b>, adiante designado por <b>MUTUANTE," +
+                "\n\n"
         )
 
-        contratoExclusive.setTxtCliente("<b>"+srOrsra+cliente.nome+'</b>, de nacionalidade Moçambicana, natural de '+cliente.naturalidade +
-                '\nportador do <b>'+cliente.tipoDocumento.descricao+'</b> \n'+cliente.nrDocumento+', emitido em '+cliente.localEmissao+'\naos '
+        contratoExclusive.setTxtCliente("<p><b>E,</b></p><b>"+cliente.nome+'</b>, de nacionalidade Moçambicana, natural de '+cliente.naturalidade +
+                '\nportador do <b>'+cliente.tipoDocumento.descricao+'</b> nº \n'+cliente.nrDocumento+', emitido em '+cliente.localEmissao+'\naos '
                 +methods.formatData(cliente.dataEmissao)+
                 ' adiante designada por <b>MUTUÁRIA</b> têm entre si, justo e contratado, o seguinte:'
         )
 
-        contratoExclusive.setTxtPrimeira(
-                'I - O MUTUANTE concede ao MUTUÁRIO, neste acto, um crédito de' + String.format("%,.2f", emprestimo.valorPedido) + ' Mt (' + valorPedidoExtenso.trim() + ')'
+        contratoExclusive.setTxtObjecto(
+                'I - O MUTUANTE concede ao MUTUÁRIO, neste acto, um crédito de <b>' + String.format("%,.2f", emprestimo.valorPedido) + ' Mt (' + valorPedidoExtenso.trim() + ').</b>'
         )
 
-        contratoExclusive.setTxtSegunda(
+        contratoExclusive.setTxtObrigacao(
                 'II - O MUTUÁRIO se compromete a restituir ao MUTUANTE a quantia mutuada, mediante\n' +
                 'ao pagamento de '+parcelas(emprestimo)+' a contar da data da assinatura\n ' +
-                'do presente contrato de Mútuo Oneroso, até a liquidação TOTAL da dívida no valor '
-                        +String.format("%,.2f", emprestimo.valorApagar) + ' Mt (' + valorAPagarExtenso + ')'
+                'do presente contrato de Mútuo Oneroso, até a liquidação TOTAL da dívida no valor <b>'
+                        +String.format("%,.2f", emprestimo.valorApagar) + ' Mt (' + valorAPagarExtenso + ').</b>'
         )
 
-        contratoExclusive.setTxtTerceira(
-                'III - O MUTUÁRIO entregará como garantia do presente acordo, os seguintes bens:\n'+bens.trim()
-        )
-
-        contratoExclusive.setTxtQuarta('Apesar do prazo de amortização previsto neste contrato para ambas as partes, ' +
-                'pode no entanto o mutuário(a) antecipar a amortização do empréstimo, sem prejuízo nos juros aplicáveis' +
-                ' ao capital. O nao cumprimento do pagamento do valor na data acordada tera juros de mora de 1.5% diario '
-        )
-
-        contratoExclusive.setTxtQuinta('Para garantia do pagamento e liquidação da quantia mutuaria, dos respectivos ' +
-                'juros compensatórios e moratórios e ainda as despesas judiciais e extrajudiciais o mutuário contratante ' +
-                'constitui a favor do mutuante, que a aceita o penhor sobre os seguintes bens moveis: <b>' + bens.trim()+'.</b>'
-        )
+        contratoExclusive.setTxtGarantia('III - O MUTUÁRIO entregará como garantia do presente acordo, os seguintes bens:\n'+bens.trim())
 
         contratoExclusive.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '                                                       Data: ' + methods.formatData(new Date()))
         contratoExclusive.setLogo(new File(jasperLogo).toString())

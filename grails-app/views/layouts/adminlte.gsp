@@ -6,6 +6,7 @@
     <title>
         <g:layoutTitle default="Grails"/>
     </title>
+    <meta content="" name="">
     <!--<meta name="viewport" content="width=device-width, initial-scale=1"/>-->
     <!--<asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>-->
 
