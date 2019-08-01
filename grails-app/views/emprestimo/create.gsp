@@ -17,7 +17,6 @@
         %{--<div class="main">--}%
         <div class="container">
             <form id="signup-form" class="signup-form" autocomplete="off" enctype="multipart/form-data">
-                %{--<input type="text" id="format" placeholder="Format">--}%
                 <input type="hidden" name="codigo" id="codigo"  class="form-control" value="12342">
                 <g:hiddenField name="testemunhas" id="testemunhas"/>
                 <g:hiddenField name="idCliente" id="idCliente" value="0"/>
@@ -25,6 +24,9 @@
                 <div>
                     <h3>Dados Pessoais</h3>
                     <fieldset>
+                        %{--<div id="idd">--}%
+                        %{--<input type="text" id="picker" class="form-control">--}%
+                        %{--</div>--}%
                         <input type="hidden">
                         <h4 class="wizzard-title"><i class="fa fa-user"></i>&nbsp;Dados Pessoais</h4>
                         <hr class="hr">
@@ -51,11 +53,11 @@
                                 <div class="col-sm-6">
                                     <div class="row">
                                         <div class="col-sm-6 pr-0">
-                                            <label class="form-label" for="nrDocumento">Nº do Documento<span>&nbsp;*</span></label>
+                                            <label class="form-label" for="nrDocumento">Nº do Documento</label>
                                             <input type="text" name="nrDocumento" id="nrDocumento" class="form-control" required/>
                                         </div>
                                         <div class="col-sm-6">
-                                            <label class="form-label" for="tipoDocumento">Tipo de Documento<span>&nbsp;*</span></label>
+                                            <label class="form-label" for="tipoDocumento">Tipo de Documento</label>
                                             <g:select id="tipoDocumento" name="tipoDocumento" optionKey="id" optionValue="descricao"
                                                       from="${tipoDocumentoList.list()}" class="form-control select"
                                             />
@@ -66,37 +68,26 @@
 
                             <div class="row margin-bottom">
                                 <div class="col-sm-6 pr-0">
-                                    <label class="form-label" for="localEmissao">Local de Emissão<span>&nbsp;*</span></label>
+                                    <label class="form-label" for="localEmissao">Local de Emissão</label>
                                     <input type="text" name="localEmissao" id="localEmissao" class="form-control datepicker-days" required/>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="row">
                                         <div class="col-sm-6 pr-0">
-                                            <label class="form-label" for="dataEmissao">Data de Emissão<span>&nbsp;*</span></label>
+                                            <label class="form-label" for="dataEmissao">Data de Emissão</label>
                                             <input type="text"  name="dataEmissao" id="dataEmissao" class="form-control data-hoje" required/>
                                         </div>
                                         %{--data-language='pt' data-date-format="dd-mm-yyyy"--}%
                                         <div class="col-sm-6">
-                                            <label class="form-label" for="dataValidade">Data de validade<span>&nbsp;*</span></label>
+                                            <label class="form-label" for="dataValidade">Data de validade</label>
                                             <input type="text" name="dataValidade" id="dataValidade" class="form-control data-hoje" required/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row margin-bottom">
-                                <div class="col-sm-6 pr-0">
-                                    <label class="form-label" for="nacionalidade">Nacionalidade<span>&nbsp;*</span></label>
-                                    <input type="text" name="nacionalidade" id="nacionalidade" class="form-control" required/>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <label class="form-label" for="naturalidade">Naturalidade<span>&nbsp;*</span></label>
-                                    <input type="text" name="naturalidade" id="naturalidade" class="form-control datepicker-days" required/>
-                                </div>
-                            </div>
                             <div class="row  margin-bottom">
                                 <div class="col-sm-3 pr-0">
-                                    <label class="form-label" for="estadoCivil">Estado Civil<span>&nbsp;*</span></label>
+                                    <label class="form-label" for="estadoCivil">Estado Civil</label>
                                     <g:select  class="form-control select estado-civil" id="estadoCivil" name="estadoCivil" data-conjuge="nomeConjuge"
                                                from="${cliente.constrainedProperties.estadoCivil.inList}"
                                     />
@@ -134,7 +125,7 @@
                         <div class="fieldset-content" id="fieldset-cont-endereco-cliente">
                             <div class="row margin-bottom">
                                 <div class="col-sm-3 pr-0">
-                                    <label class="form-label" for="contacto1">Contacto<span>&nbsp;*</span></label>
+                                    <label class="form-label" for="contacto1">Contacto</label>
                                     <input type="text" name="contacto1" id="contacto1" class="form-control contacto" required>
                                 </div>
 
@@ -161,8 +152,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12 pr-0">
-                                            <label class="form-label" for="endereco">Morada<span>&nbsp;*</span></label>
-                                            <textarea rows="5" class="form-control select" name="endereco" id="endereco" required>
+                                            <label class="form-label" for="endereco">Morada</label>
+                                            <textarea rows="5" class="form-control select" name="endereco" id="endereco">
 
                                             </textarea>
                                         </div>
@@ -198,24 +189,30 @@
                         <hr class="hr">
                         <div class="fieldset-content">
                             <div class="row margin-bottom">
-                                <div class="col-sm-4 pr-0">
-                                    <label class="form-label" for="valorPedido">Valor Pretendido<span>&nbsp;*</span></label>
+                                <div class="col-sm-3 pr-0">
+                                    <label class="form-label" for="valorPedido">Valor Pretendido</label>
                                     <input type="text" name="valorPedido" id="valorPedido" class="form-control" required/>
                                 </div>
-                                <div class="col-sm-4 pr-0">
-                                    <label class="form-label" for="nrPrestacoes" id="label-nrPrestacoes">Numero de Prestações<span>&nbsp;*</span></label>
-                                    <input type="text" name="nrPrestacoes" id="nrPrestacoes" class="form-control input-valor" value="1" required min="1"/>
+                                <div class="col-sm-3 pr-0">
+                                    <label class="form-label" for="taxaJuros">Taxa de Juros (%)</label>
+                                    <input type="text" min="0" max="100" name="taxaJuros" id="taxaJuros" class="form-control" required/>
                                 </div>
-                                <div class="col-sm-4">
-                                    <label class="form-label" for="taxaJuros">Taxa de Juros (%)<span>&nbsp;*</span></label>
-                                    <input type="text" min="0" max="100" name="taxaJuros" id="taxaJuros" class="form-control" value="30" required/>
+                                <div class="col-sm-3 pr-2">
+                                    <label class="form-label" for="valorApagar">Valor a Pagar</label>
+                                    <input type="text" readonly name="valorApagar" id="valorApagar" class="form-control"/>
+                                </div>
+                                <div class="col-sm-3 pl-3">
+                                    <label class="form-label" for="modoPagamento">Modo de Pagamento</label>
+                                    <g:select id="modoPagamento" name="modoPagamento" optionKey="descricao"
+                                              optionValue="descricao" from="${modoPagamentoList}" class="form-control select"
+                                    />
                                 </div>
                             </div>
 
                             <div class="row margin-bottom">
                                 <div class="col-sm-3 pr-0">
-                                    <label class="form-label" for="valorApagar">Valor a Pagar</label>
-                                    <input type="text" readonly name="valorApagar" id="valorApagar" class="form-control"/>
+                                    <label class="form-label" for="nrPrestacoes" id="label-nrPrestacoes">Numero de Prestações</label>
+                                    <input type="text" name="nrPrestacoes" id="nrPrestacoes" class="form-control input-valor" value="1" required/>
                                 </div>
                                 <div class="col-sm-3 pr-0">
                                     <label class="form-label" for="valorPorPrestacao" id="label-valorPrestacao">Valor Por Prestação</label>
@@ -227,39 +224,43 @@
                                 </div>
                                 <div class="col-md-3 pl-3">
                                     <label class="form-label" for="dataPrazo">Prazo de Pagamento</label>
-                                    <input type="text" name="dataPrazo" id="dataPrazo" class="form-control" required/>
+                                    <input type="text" name="dataPrazo" id="dataPrazo" class="form-control" value="10" required/>
                                 </div>
                             </div>
 
                             <div class="row margin-bottom">
-                                <div class="col-md-4 pr-0">
-                                    <label class="form-label" for="taxaMulta">Taxa de Multa<span>&nbsp;*</span></label>
-                                    <input type="text" name="taxaMulta" id="taxaMulta" class="form-control" value="1.5" required/>
+                                <div class="col-md-3 pr-0">
+                                    <label class="form-label" for="taxaMulta">Taxa de Multa</label>
+                                    <input type="text" name="taxaMulta" id="taxaMulta" class="form-control" value="10" required/>
                                 </div>
-                                <div class="col-md-4 pr-0">
-                                    <label class="form-label" for="taxaConcessao">Taxa de Tramitação</label>
-                                    <input type="text" name="taxaConcessao" id="taxaConcessao" class="form-control" value="0" required/>
+                                <div class="col-md-3 pr-0">
+                                    <label class="form-label" for="taxaConcessao">Taxa de Concessão</label>
+                                    <input type="text" name="taxaConcessao" id="taxaConcessao" class="form-control" value="150" required/>
                                 </div>
+                                %{--<div class="col-sm-6">--}%
+                                %{--<div class="row">--}%
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="localNegocio">Local do Nogócio</label>
+                                    <input type="text" name="localNegocio" id="localNegocio" class="form-control"/>
+                                </div>
+
+                                %{--</div>--}%
+                                %{--</div>--}%
+                            </div>
+
+                            <div class="row margin-bottom">
                                 <div class="col-sm-4">
-                                    <label class="form-label" for="experienciaNegocio">Profissão<span>&nbsp;*</span></label>
-                                    <input type="text" name="experienciaNegocio" title="Experiencia no negocio actual" id="experienciaNegocio" class="form-control" required/>
+                                    <label class="form-label" for="experienciaNegocio">Experiencia no Negócio actual</label>
+                                    <input type="text" name="experienciaNegocio" title="Experiencia no negocio actual" id="experienciaNegocio" class="form-control" />
                                 </div>
-                            </div>
-
-                            <div class="row margin-bottom">
-
-                                <div class="col-md-4 pr-0">
+                                <div class="col-md-4">
                                     <label class="form-label" for="destinoCredito">Destino do Crédito</label>
                                     <g:select id="destinoCredito" name="destinoCredito" optionKey="descricao"  optionValue="descricao"
                                               from="${destinoCreditoList}" class="form-control select"/>
                                 </div>
-                                <div class="col-sm-4 pr-0">
+                                <div class="col-sm-4">
                                     <label class="form-label" for="tipoNegocio">Tipo de Nogócio</label>
                                     <input type="text" name="tipoNegocio" id="tipoNegocio" class="form-control"/>
-                                </div>
-                                <div class="col-sm-4">
-                                    <label class="form-label" for="localNegocio">Local do Nogócio</label>
-                                    <input type="text" name="localNegocio" id="localNegocio" class="form-control"/>
                                 </div>
                             </div>
 
@@ -287,6 +288,7 @@
                                 </div>
                             </div>
                         </div>
+                        %{--<button type="submit" class="btn btn-success">Save</button>--}%
                     </fieldset>
 
                     <h3>Garantia</h3>
@@ -296,8 +298,7 @@
                         <div class="fieldset-content">
                             <div class="row mb-1">
                                 <div class="col-sm-6" id="div-avalista">
-                                    <label class="form-label" for="avalista">Avalista</label>
-                                    <input  type="text" name="avalista" id="avalista" class="form-control"/>
+                                    <g:render template="/cliente/avalistaCombo"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label" for="btn-testemunhas">&nbsp;</label>
@@ -306,6 +307,7 @@
                                         <i class="fa fa-users"></i>&nbsp;Testemunhas
                                     </a>
                                 </div>
+                                <g:hiddenField name="relacaoBens" id="relacaoBens"/>
                             </div>
 
                             <div class="row mt-0" id="div-garantias">
@@ -340,6 +342,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-success" id="btn-select-cliente"><i class="fa fa-check"></i>&nbsp;Concluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-avalista">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content" style="border-radius: 5px">
+                <div class="modal-body m-0 p-0" id="avalista-corpo">
+                    <form id="form-avalista">
+                        <g:render template="/cliente/avalista"/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" data-dismiss="modal" id="btn-cancel-avalista">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="btn-save-avalista"><i class="fa fa-check"></i>&nbsp;Concluir</button>
                 </div>
             </div>
         </div>
@@ -385,17 +405,6 @@
 %{--<asset:javascript src="bootstrap.min.js"/>--}%
 <script type="text/javascript">
 
-    // function formatMoney(n, c, d, t) {
-    //     var c = isNaN(c = Math.abs(c)) ? 2 : c,
-    //         d = d == undefined ? "." : d,
-    //         t = t == undefined ? "," : t,
-    //         s = n < 0 ? "-" : "",
-    //         i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
-    //         j = (j = i.length) > 3 ? j % 3 : 0;
-    //
-    //     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-    // };
-
     function appendGarantia() {
         index = $('.box-garantia').length + 1;        //conta divs de garantia que ja existem
         // if(index === 4) return;                         //apenas so aceita 3 divs de garantia
@@ -417,7 +426,7 @@
     function provinciaEDistrito(data){
         $('#fieldset-cont-endereco-cliente .provincia').val(data.provincia).trigger('change');
         setTimeout(function () {
-            $('#fieldset-cont-endereco-cliente .distrito').val(data.distrito).trigger('change');
+            $('#fieldset-cont-endereco-cliente .distrito').val(data.distrito).trigger('change')
         },1000);
     }
 </script>
@@ -425,9 +434,45 @@
 <script>
     $(document).ready(function () {
 
-        $('#format').on('input',function () {
-            console.log('Format: '+formatMoney($(this).val()))
+        function desabitilitaDomingo(domingo){
+            var calendar = domingo.getDay();
+            return [(calendar>0)]
+        }
+
+
+        // $('#picker').datepicker({language: 'pt'}).data('datepicker');
+        $('#picker').datepicker({language: 'pt'});
+        $('#picker').focus(function () {
+            // $('.-weekend-').css({'background-color':'red'});
+            // $('.datepicker').first().css({'background-color':'red'});
+            $('.datepicker').first().css({'background-color':'blue'});
+            $('.datepicker > .datepicker--content').first().css({'background-color':'red'});
+            $('.datepicker > .datepicker--content > .datepicker--days').first().css({'background-color':'white'});
+            $('.datepicker > .datepicker--content > .-weekend-').first().css({'background-color':'blue','color':'pink'});
+            // $('.datepicker > .datepicker--content > .datepicker--cells > .datepicker--cell').first().css({'background-color':'yellow'});
+
+            // datepicker--cell datepicker--cell-day -weekend-
+
+            // datepicker--cell datepicker--cell-day -weekend- -selected-
+            // datepicker--content
+            // datepicker--days datepicker--body active
+            // datepicker--cell datepicker--cell-day -weekend-
         });
+
+        $("#picker").datepicker({
+            onSelect: function (dateText) {
+                dates = dateText.split('-');
+                var prazoo = new Date(dates[1] + '-' + dates[0] + '-' + dates[2]);
+                if(prazoo.getDay() === 0){
+                    // alert('domingo')
+                    prazoo.setDate(prazoo.getDate()+1);
+                    // $('#picker').selectDate(prazoo)
+                    $('#picker').datepicker({language: 'pt'}).data('datepicker').selectDate(prazoo)
+                }
+            }
+        });
+
+        $('.select2').select2();
 
         $.fn.inputFilter = function (inputFilter) {
             return this.on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
@@ -443,8 +488,7 @@
         };
 
         $('.select2').select2();
-        $('#caminho').append('<li><a><g:link action="index">Emprestimos</g:link>  </a></li>');
-        $('#caminho').append('<li><a><g:link action="create">Novo</g:link>  </a></li>');
+        $('#caminho').append('<li><a><g:link action="create">Registar Emprestimo</g:link>  </a></li>');
         $('#li_emprestimos').addClass('active');
         $('#li_novo_emprestimo').addClass('active');
 
@@ -459,6 +503,8 @@
     $(document).ready(function () {
         var dataEmissao = $('#dataEmissao').datepicker({language: 'pt'}).data('datepicker');
         var dataValidade = $('#dataValidade').datepicker({language: 'pt'}).data('datepicker');
+        // dataEmissao.selectDate(new Date());
+        // dataValidade.selectDate(new Date());
 
         $('.estado-civil').on('change',function () {
             estadoCivil = $(this).children('option').filter(':selected').text();
@@ -512,8 +558,6 @@
                     $('#nrFihos').val(cliente.nrFilhos);
                     $('#tipoContrato').val(cliente.tipoContrato);
                     $('#anoAdmissao').val(cliente.anoAdmissao);
-                    $('#nacionalidade').val(cliente.nacionalidade);
-                    $('#naturalidade').val(cliente.naturalidade);
                     // $('#estadoSlect')
                     /*contacto e endereco*/
                     $('#contacto1').val(cliente.contacto1);
@@ -587,9 +631,15 @@
 <script>
 
     $(document).ready(function () {
+        $('#tabelaTestemunha').SetEditable({$addButton: $('#but_add')}); //habilita tabela de testemunhas para que seja editevel
+        var dataInicioPagamento = $('#dataInicioPagamento').datepicker({language: 'pt'}).data('datepicker');
+        dataInicioPagamento.selectDate(new Date());
+
+        var dataPrazo = $('#dataPrazo').datepicker({language: 'pt'}).data('datepicker');
+
         $('#but_add').click(function (e) {
             var rowCount = $('#tabelaTestemunha >tbody >tr').length;
-            if (rowCount === 0) {
+            if (rowCount === 1) {
                 $('#bEdit').trigger('click');
             }
             if(rowCount === 2){
@@ -643,33 +693,37 @@
         });
         $('.form-check').trigger('ifChanged'); //inicializar os checks
 
+        // $('.input-valor').on('input', function () {
+        //     calculoValorApagar()
+        // });
+
         $("#valorPedido").inputFilter(function (value) {
-            // console.log('Format: '+formatMoney($(this).val()))
-            // $('#valorPedido').val(formatMoney(value));
-            calculoValorApagar();
+            result = /^\d*$/.test(value) && (value === "" || value.length <= 20);
+            if (result) {
+                calculoValorApagar();
+            }
+            return result;
         });
         $("#nrPrestacoes").inputFilter(function (value) {
             result = /^\d*$/.test(value) && (value === "" || value.length <= 20);
             if (result) {
                 calculoValorApagar();
-
-                dates = $('#dataInicioPagamento').val().split('-');
-                var prazoo = new Date(dates[1]+'-'+dates[0]+'-'+dates[2]);
-                if(value == ''){
-                    prazoo.setMonth(prazoo.getMonth());
-                }else{
-                    prazoo.setMonth(prazoo.getMonth()+parseInt(value-1));
-                }
-                dataPrazo.selectDate(prazoo);
+                $('#modoPagamento').val($('#modoPagamento').val()).trigger('change');
             }
             return result;
         });
-        // $("#taxaJuros").inputFilter(function (value) {
-        //     calculoValorApagar();
-        // });
-
-        $('#taxaJuros').on('input',function () {
-            calculoValorApagar();
+        $("#taxaJuros").inputFilter(function (value) {
+            result = /^\d*$/.test(value) && (value === "" || parseInt(value) <= 100);
+            if (result) {
+                calculoValorApagar();
+            }
+            return result
+        });
+        $('#taxaMulta').inputFilter(function (value) {
+            return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 100);
+        });
+        $('#taxaConcessao').inputFilter(function (value) {
+            return /^\d*$/.test(value) && (value === "" || value.length <= 20);
         });
 
         function calculoValorApagar() {
@@ -680,50 +734,115 @@
                 $('#valorPorPrestacao').val("");
                 return
             }
-
             valorApagar = parseFloat(valorPedido) + parseFloat(valorPedido * percent); // calculo de valor total a pagar
-            nrPrestacoes = $('#nrPrestacoes').val();
-            valorPorPrestacao = valorApagar/nrPrestacoes;
-
             $('#valorApagar').val(valorApagar.toFixed(2));
-            if($('#nrPrestacoes').val() == ''){
-                $('#valorPorPrestacao').val(valorApagar.toFixed(2));
+
+            nrPrestacoes = $('#nrPrestacoes').val();
+
+            valorPorPrestacao = valorApagar / nrPrestacoes;                //caculo de valor a pagar por prestacao
+            if(modoPagamento === 'Mensal'){
+                $('#valorPorPrestacao').val(parseFloat(valorPedido * percent));
             }else{
-                $('#valorPorPrestacao').val(valorPorPrestacao.toFixed(2));
+                if (nrPrestacoes === '') {
+                    $('#valorPorPrestacao').val(valorApagar.toFixed(2))
+                }else{
+                    $('#valorPorPrestacao').val(valorPorPrestacao.toFixed(2))
+                }
             }
-            // value = $('#nrPrestacoes').val();
-            // if(parseInt(value) === 1){
-            //     $('#taxaJuros').val(30)
-            // }else if(parseInt(value) === 2){
-            //     $('#taxaJuros').val(47)
-            // }else if(parseInt(value) === 3){
-            //     $('#taxaJuros').val(67)
-            // }else if(parseInt(value) === 0){
-            //     $('#taxaJuros').val(67)
-            // }
+
+            //taxas de concessao
+            if (parseFloat(valorPedido) >= 1000 && parseFloat(valorPedido) <= 5000) {
+                $('#taxaConcessao').val(150)
+            } else if (parseFloat(valorPedido) > 5000 && parseFloat(valorPedido) <= 100000) {
+                $('#taxaConcessao').val(300)
+            } else if (parseFloat(valorPedido) > 100000 && parseFloat(valorPedido) <= 500000) {
+                $('#taxaConcessao').val(500)
+            } else {
+                $('#taxaConcessao').val(150)
+            }
         }
 
-        $('#tabelaTestemunha').SetEditable({$addButton: $('#but_add')}); //habilita tabela de testemunhas para que seja editevel
-        var dataInicioPagamento = $('#dataInicioPagamento').datepicker({language: 'pt'}).data('datepicker');
+        $('#modoPagamento').on('change', function () {
+            var dataInicio = new Date();
+            modoPagamento = $(this).val();                         //get value of modaidadadepagamento input
+            nrPrestacoesElement = $('#nrPrestacoes');
+            $('#label-nrPrestacoes').html('Numero de Prestações');
+            $('#label-valorPrestacao').html('Valor Por Prestação');
+            if (modoPagamento === 'Diaria') {                    //prestacao diaria
+                dataInicio.setDate(dataInicio.getDate() + 1);
+            } else if (modoPagamento === 'Semanal') {             //prestacao semanal
+                dataInicio.setDate(dataInicio.getDate() + 7);
+            } else if (modoPagamento === 'Quinzenal') {             //prestacao semanal
+                dataInicio.setDate(dataInicio.getDate() + 15);
+            } else {                                         //prestacao mensal
+                dataInicio.setMonth(dataInicio.getMonth()+1);
+                $('#label-nrPrestacoes').html('Numero de Mêses');
+                $('#label-valorPrestacao').html('Juros');
+            }
 
-        dataProximo = new Date();
-        dataProximo.setMonth(dataProximo.getMonth()+1);
-        dataInicioPagamento.selectDate(dataProximo);
-
-        var dataPrazo = $('#dataPrazo').datepicker({language: 'pt'}).data('datepicker');
-        dataPrazo.selectDate(dataProximo);
+            dataInicioPagamento.selectDate(dataInicio);
+            nrPrestacoesElement.attr({"min": 1});
+            calculoValorApagar();
+        });
 
         $("#dataInicioPagamento").datepicker({
             onSelect: function(dateText) {
-                nrPrestacoesElement = $('#nrPrestacoes');
-
                 dates = dateText.split('-');
+                var dataInico = new Date(dates[1]+'-'+dates[0]+'-'+dates[2]);
                 var prazoo = new Date(dates[1]+'-'+dates[0]+'-'+dates[2]);
 
-                prazoo.setMonth(prazoo.getMonth()+parseInt(nrPrestacoesElement.val()-1));
+                var int = parseInt($('#nrPrestacoes').val()-1);
+                console.clear();
+
+                if (modoPagamento === 'Diaria') {//prestacao diaria
+                    // prazoo.setDate(prazoo.getDate() + parseInt(nrPrestacoesElement.val()-1));
+                    for (var i = 1; i <= int ; i++){
+                        prazoo.setDate(prazoo.getDate()+1);
+                        if(prazoo.getDay() === 0){ //se for domingo
+                            console.log('domingo: '+ prazoo.getDate()+'-'+parseInt(prazoo.getMonth()+1)+'-'+prazoo.getFullYear());
+                            prazoo.setDate(prazoo.getDate()+1);
+                            console.log('Salta para: '+ prazoo.getDate()+'-'+parseInt(prazoo.getMonth()+1)+'-'+prazoo.getFullYear())
+                        }
+                        console.log('Prazo: '+i+'  :'+ prazoo.getDate()+'-'+parseInt(prazoo.getMonth()+1)+'-'+prazoo.getFullYear());
+                    }
+                } else if(modoPagamento === 'Semanal') {                                         //prestacao mensal
+                    prazoo.setDate(prazoo.getDate() + parseInt((nrPrestacoesElement.val()-1)*7));
+                }else if(modoPagamento === 'Quinzenal'){
+                    prazoo.setDate(prazoo.getDate() + parseInt((nrPrestacoesElement.val()-1)*15));
+                }else{
+                    prazoo.setMonth(prazoo.getMonth()+parseInt(nrPrestacoesElement.val()-1));
+                }
+
+                if(dataInico.getDay() === 0 && modoPagamento === 'Diaria'){
+                    swal({
+                        title: "Deseja Continuar?",
+                        text: "Selecionou domingo como data inicial de pagamento",
+                        imageUrl: "../assets/question.png",
+                        showCancelButton: true,
+                        closeOnConfirm: true,
+                        showLoaderOnConfirm: false,
+                        confirmButtonText:'Sim',
+                        cancelButtonText:'Não'
+                    }, function (confirm) {
+                        if(!confirm){
+                            console.log('nao usar domingos')
+                            dataInico.setDate(dataInico.getDate()+1);                                   //caso nao avancar com domingo
+                            $('#dataInicioPagamento').datepicker({language: 'pt'}).data('datepicker').selectDate(dataInico);
+                            if(prazoo.getDay() === 0) {
+                                prazoo.setDate(prazoo.getDate() + 1)
+                            }
+                        }else{
+                            console.log('usar domingos');
+                            $('#dataInicioPagamento').datepicker({language: 'pt'}).data('datepicker').selectDate(dataInico);
+                            prazoo.setDate(prazoo.getDate())
+                        }
+                    });
+                }
                 dataPrazo.selectDate(prazoo);
             }
         });
+
+        $('#modoPagamento').val($('#modoPagamento').val()).trigger('change');
 
         $('#signup-form').submit(function () {
             event.preventDefault();
@@ -775,6 +894,29 @@
     });
 </script>
 
+%{--Avalista--}%
+<script>
+    $(document).ready(function () {
+        $(document).on('click','#btn-add-avalista',function () {
+            $('#modal-avalista').modal({
+                show:true, backdrop: "static"
+            })
+        });
+
+        $(document).on('click', "#btn-clean-alavista", function () {
+            $('#avalista').val($('#avalista option:first').val()).trigger('change');
+        });
+
+        $('#avalista').on('change', function () {                    //combo avalista
+            var visible = Boolean($(this).val());
+            $(this).siblings('#clear-avalista').toggleClass('hidden', !visible);
+        }).trigger('propertychange');
+
+        $('#clear-avalista').click(function () {$('#avalista').val($('#avalista option:first').val()).trigger('change');});
+        $('#btn-cancel-avalista').click(function () {$('#form-avalista').trigger('reset')});
+        $('#btn-save-avalista').click(function () {$('#form-avalista').trigger('submit')});
+    });
+</script>
 %{--Garantia--}%
 <script>
     $(document).ready(function () {

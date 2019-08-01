@@ -77,7 +77,7 @@
 </head>
 
 <body>
-<div id="prestacoes-corpo" class="box box-primary" style="padding: 10px; font-size: 14px">
+<div id="prestacoes-corpo">
     %{--<g:if test="${emprestimo.modoPagamento.id == 3}">--}%
         %{--<g:render template="prestacoesMensal"></g:render>--}%
 

@@ -163,7 +163,7 @@ class PrestacaoController {
                 if (haJuros) {
                     if (valParcelaAux == 0) {//Vai Pagar a prestacao (Juros) na totalidade
                         pagarPrestacaoJuros(prestacaoGeral)
-                    } else {//Vai pagar uma parcela da prestacaoGeral
+                    } else{//Vai pagar uma parcela da prestacaoGeral
                         pagarParcelaDaPrestacaoJuros(prestacaoGeral)
                     }
                 }
@@ -629,6 +629,9 @@ class PrestacaoController {
     }
 
     def create(Integer max) {
+
+        def ok = methods.saltarDomingos(Date.parse("yyyy-MM-dd", (Emprestimo.get(1).dataInicioPagamento + 1).format("yyyy-MM-dd")))
+        println('Data:'+ ok)
         params.max = Math.min(max ?: 7, 100)
         def emprestimoFechadoOuNao = false
         def emprestimos = Emprestimo.createCriteria().list(max: params.max, offset: params.offset) {
@@ -718,32 +721,33 @@ class PrestacaoController {
 
     /*Fader */
 
-    def salvarPrestacoes(Emprestimo emprestimo) {
-        List<Prestacao> prestacaoList = new ArrayList<>()
-        def contador = 1
-        Calendar calendar = Calendar.getInstance()
-        calendar.setTime(emprestimo.dataInicioPagamento)
-        def limite
-        while (contador < emprestimo.nrPrestacoes + 1) {
-            limite = calendar.getTime()
-            Prestacao prestacao = new Prestacao()
-            prestacao.valor = params.valorPorPrestacao.toDouble()
-            prestacao.estado = "Pendente"
-            def zeros = (3 - (contador.toString().length()))
-            prestacao.numero = emprestimo.nrProcesso + methods.retornaZeros(zeros) + contador
-            prestacao.emprestimo = emprestimo
-            prestacao.setDataRegisto(emprestimo.dataRegisto)
-            prestacao.setDataModif(emprestimo.dataModif)
-            prestacao.setUserRegisto(emprestimo.userRegisto)
-            prestacao.setUserModif(emprestimo.userRegisto)
-            prestacao.dataLimite = methods.saltarDomingos(Date.parse("yyyy-MM-dd", (limite).format("yyyy-MM-dd")))
-            prestacao.tipoPrestacao = TipoPrestacao.get(1)
-            prestacaoList.add(prestacao)
-            contador += 1
-            calendar.add(Calendar.MONTH, 1)
-        }
-        return prestacaoList
-    }
+//    def salvarPrestacoes(Emprestimo emprestimo) {
+//        List<Prestacao> prestacaoList = new ArrayList<>()
+//        def contador = 1
+//        Calendar calendar = Calendar.getInstance()
+//        calendar.setTime(emprestimo.dataInicioPagamento)
+//        def limite
+//        while (contador < emprestimo.nrPrestacoes+1) {
+//            limite = calendar.getTime()
+//            Prestacao prestacao = new Prestacao()
+//            prestacao.valor = params.valorPorPrestacao.toDouble()
+//            prestacao.estado = "Pendente"
+//            def zeros = (3 - (contador.toString().length()))
+//            prestacao.numero = emprestimo.nrProcesso+methods.retornaZeros(zeros)+contador
+//            prestacao.emprestimo = emprestimo
+//            prestacao.setDataRegisto(emprestimo.dataRegisto)
+//            prestacao.setDataModif(emprestimo.dataModif)
+//            prestacao.setUserRegisto(emprestimo.userRegisto)
+//            prestacao.setUserModif(emprestimo.userRegisto)
+//            prestacao.dataLimite =  methods.saltarDomingos(Date.parse("yyyy-MM-dd", (limite).format("yyyy-MM-dd")))
+//            prestacao.tipoPrestacao = TipoPrestacao.get(1)
+//            prestacaoList.add(prestacao)
+//            contador+=1
+//            calendar.add(Calendar.MONTH, 1)
+//        }
+//        return prestacaoList
+//    }
+
 
     IreportController ireportController = new IreportController()
 
@@ -811,4 +815,6 @@ class PrestacaoController {
         def ficha = new File(IreportController.reciboDir)
         render(file: ficha, contentType: 'application/pdf')
     }
+}
+
 }
