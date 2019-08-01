@@ -15,7 +15,7 @@ class EmprestimoAuditoria {
         capitalNovo(nullable: true)
         prazoAntigo(nullable: true)
         prazoNovo(nullable: true)
-        tipo(inList: ['Recapitalizacao','Prolongamento'])
+        tipo(inList: ['Recapitalizacao','Prolongamento','Reducao_Capital'])
         userResponsavel(nullable: true)
     }
     static mapping = {

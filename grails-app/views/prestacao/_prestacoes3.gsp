@@ -343,13 +343,13 @@
                                 data: $(this).serialize(),
                                 success: function (data) {
                                     // window.location ='/categoriaEntidade/show/'+data.categoria.id;
-                                    alert('alert sera 1 cena');
+                                    alert('Sucesso: '+data.msg);
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
                                     $('#btnSalvarParcelaCapital').modal('hide');
                                 },
-                                error: function () {
-                                    alert('Nao e 1 cena');
+                                error: function (data) {
+                                    alert('Erro: '+data.msg);
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
                                 }
