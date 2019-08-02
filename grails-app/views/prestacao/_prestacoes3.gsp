@@ -30,7 +30,10 @@
                                 Cliente: <b class="pull-right">${emprestimo.cliente.nome}</b>
                             </a>
                             <a class="list-group-item">
-                                Nº do processo: <b class="pull-right">${emprestimo.nrProcesso} - ${emprestimo.modoPagamento.descricao}</b>
+                                Tipo de crédito: <b class="pull-right">${emprestimo.modoPagamento.descricao}</b>
+                            </a>
+                            <a class="list-group-item">
+                                Nº do processo: <b class="pull-right">${emprestimo.nrProcesso}</b>
                             </a>
                             <a class="list-group-item">
                                 Capital: <b class="pull-right"><g:formatNumber number="${emprestimo.valorPedido}"
@@ -51,7 +54,7 @@
                                     <g:formatNumber number="${emprestimo.valorPedido * (emprestimo.taxaJuros) / 100}" format="#,##0.00"/>
                                 </b>
                             </a>
-                            <a class="list-group-item">Valor a pagar: <b class="pull-right">
+                            <a class="list-group-item">Reembolso: <b class="pull-right">
                                 <g:formatNumber
                                         number="${emprestimo.valorPedido + emprestimoServic.somaPrestacoesDivida(emprestimo)}"
                                         format="#,##0.00"/></b>
@@ -65,6 +68,7 @@
                                     number="${emprestimoServic.somaPrestacoesDivida(emprestimo)}"
                                     format="#,##0.00"/></b>
                             </a>
+                            <g:if test="${emprestimo.modoPagamento.id == 3}">
                             <a class="list-group-item">
                                 <button class="btn btn-sm btn-success btn-reduzir-capital col-md-offset-3"
                                         id="btn-reduzir-capital" data-capital="${emprestimo.valorPedido}"
@@ -74,6 +78,7 @@
                                 </button>
                                 %{--joaoBtnParcCap--}%
                             </a>
+                            </g:if>
                         </div>
                     </div>
 
@@ -343,8 +348,22 @@
                                 data: $(this).serialize(),
                                 success: function (data) {
                                     // window.location ='/categoriaEntidade/show/'+data.categoria.id;
-                                    alert('Sucesso: '+data.msg);
-                                    location.reload();
+                                    // alert('Sucesso: '+data.msg);
+                                    setTimeout(function () {
+                                        swal({
+                                            title: "Certo!",
+                                            text: data.msg,
+                                            timer: 2500,
+                                            type: "success",
+                                            showConfirmButton: false
+                                        });
+                                        setInterval(
+                                            function () {
+                                                location.reload();
+                                            }, 1000
+                                        )
+                                    }, 2000);
+                                    joao
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
                                     // $('#btnSalvarParcelaCapital').modal('hide');
@@ -884,7 +903,7 @@
             preencherArrays();
             var totalPagar = +$('#valor-apagar').val();
 
-            console.log(prestacoes);
+            // console.log(prestacoes);
 
             swal({
                 title: "Confirmar o pagamento de " + totalPagar + " MT?",
