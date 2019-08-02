@@ -360,10 +360,11 @@
                                         setInterval(
                                             function () {
                                                 location.reload();
+                                                %{--window.open('<g:createLink controller="prestacao" action="verRecibo"/>', '_blank');--}%
                                             }, 1000
                                         )
                                     }, 2000);
-                                    joao
+                                    // joao
                                     $('#valor_parcela_capital').val('');
                                     $('#observacao_parcela_capital').val('');
                                     // $('#btnSalvarParcelaCapital').modal('hide');
