@@ -60,7 +60,7 @@ class Emprestimo1Service {
                 }
             }
         }
-        if(emprestimo.modoPagamento.id==3 && !emprestimo.estado.equalsIgnoreCase('Aberto')){
+        if(emprestimo.modoPagamento.id==3 && !emprestimo.estado.equalsIgnoreCase('Fechado')){
             divida += emprestimo.valorPedido
         }
 

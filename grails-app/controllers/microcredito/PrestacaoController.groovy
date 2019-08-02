@@ -818,7 +818,6 @@ class PrestacaoController {
     }
 
     def salvarPrestacoes(Emprestimo emprestimo) {
-        print('eizy')
         List<Prestacao> prestacaoList = new ArrayList<>()
         def nrDias = 0
         def limite = Calendar.getInstance()

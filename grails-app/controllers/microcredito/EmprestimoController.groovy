@@ -35,10 +35,10 @@ class EmprestimoController {
     }
 
     def index(Integer max) {
-        println('index fader agora')
 
-//        IreportController ireportController = new IreportController('D:/')
-//        ireportController.pdfContratoExclusive(Emprestimo.get(11)) //gera contrato
+        IreportController ireportController = new IreportController('D:/')
+        ireportController.pdfContrato(Emprestimo.get(13)) //gera contrato
+        ireportController.pdfPrestacoes(Emprestimo.get(13)) //gera contrato
 
         def userPerfil = usuarioLogado().perfil.id
         def filtro = false
@@ -345,8 +345,8 @@ class EmprestimoController {
             cliente.save(flush: true)
             msg['msg'] = "Salvo Com Sucesso"
             IreportController ireportController = new IreportController(pdfDestino)
-            ireportController.pdfContratoExclusive(emprestimo) //gera contrato
-            ireportController.pdfPrestacoesExclusive(emprestimo)
+            ireportController.pdfContrato(emprestimo) //gera contrato
+            ireportController.pdfPrestacoes(emprestimo)
             methods.backupDB()
         } catch (Exception e) {
             msg['msg'] = e.getMessage()

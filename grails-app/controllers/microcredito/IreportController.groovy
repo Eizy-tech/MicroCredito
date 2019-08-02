@@ -32,41 +32,40 @@ class IreportController {
     }
 
     class IreportEmprestimo {
-        String nome, tipoDocumento, email, tipoRenda
+        String txtContrato, txtDados
         String  nrProcesso, taxaTramitacao, prazoPretendido, inicioPagamento, modoPagamento, cliente, valorPedido, valorApagar, taxaJuros, renda, logo, notaBem, userAndDate
     }
 
     class IreportPrestacao {
-        String num, valor, limite, logo, userAndDate /*, multa*/
+        String num, valor, limite, logo,tipo, txtDados, userAndDate /*, multa*/
     }
 
-    class IreportContratoExclusive {
-        String txtDados, txtObjecto, txtObrigacao, txtGarantia, txtQuarta, txtQuinta, txtSexta, txtSetima, txtOitava, txtNona, txtCliente, logo, userAndDate,data
+    class IreportContrato {
+        String txtDados, txtContrato, logo, userAndDate
     }
 
     def parcelas(Emprestimo emprestimo){
-        def parcelas =''
+        def parcelas
         def exte = porExtenso(cw.write(new BigDecimal(Double.parseDouble(emprestimo.nrPrestacoes.toString()))))
+        def quebra = exte.split(' ')
 
-        if(emprestimo.nrPrestacoes > 1){
-
-            if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('diaria')){
+        switch (emprestimo.modoPagamento.descricao.toLowerCase()){
+            case 'diaria':
                 parcelas = 'diárias, pagáveis diárias'
-            }
-
-            if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('semanal')){
+                break
+            case 'semanal':
                 parcelas = 'semanais, pagáveis semanais'
-            }
-
-            if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('quinzenal')){
+                break
+            case 'quinzenal':
                 parcelas = 'quinzenais, pagáveis quinzenais'
-            }
-
-            if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('mensal')){
+                break
+            case 'mensal':
                 parcelas = 'mensais, pagáveis mensais'
-            }
+                break
+            default:
+                parcelas = 'diárias, pagáveis diárias'
         }
-        return emprestimo.nrPrestacoes+' ('+exte+')'+ 'parcelas '+parcelas
+        return emprestimo.nrPrestacoes+' ('+quebra[0].trim()+')'+ ' parcelas '+parcelas
     }
 
     def pdfContratoExclusiveFrente(Emprestimo emprestimo) {
@@ -97,104 +96,103 @@ class IreportController {
             }
         }
 
-        IreportContratoExclusive contratoExclusive = new IreportContratoExclusive()
-        def nomeArray = cliente.nome.split(' ')
-        def srOrsra
-        if(nomeArray[0].charAt(nomeArray[0].length()-1).toString().equalsIgnoreCase('a')){
-            srOrsra = 'Sra, '
-        }else{
-            srOrsra = 'Sr, '
-        }
+        IreportContrato contrato = new IreportContrato()
+        contrato.setLogo(new File(jasperLogo).toString())
 
-        contratoExclusive.setTxtDados("<p><b>Entre</b></p>\n" +
-                "<b>Prosperidade Microcrédito E.I</b>, com sede no, "+microcredito.endereco+
-                ", <b>\nCidade de Maputo</b>, registado na Conservátoria de Registos Legais de Maputo, sob número " +
-                "\n 101097439, representada pelo seu representante, <b>"+microcredito.mutuante+"</b>, adiante designado por <b>MUTUANTE," +
-                "\n\n"
+        contrato.setTxtDados(
+                "<b>" +
+                        "Rua: " +microcredito.endereco+"<br>" +
+                        "Cell: " +microcredito.celular+"<br>" +
+                        "Email: " +microcredito.email+"<br>"+
+                        "NUIT: "+microcredito.nuit+
+                "</b>"
+        )
+        contrato.setTxtContrato("<p>&#9;&#9;&#9;&#9;&#9;<b>CONTRATO DE MÚTUO</b></p> <br>" +
+                "<b>Entre<br>Prosperidade Microcrédito E.I</b>, com sede no Bairro Central, "+microcredito.endereco+
+                ", <b>Cidade de Maputo</b>, registado na Conservátoria de Registos Legais de Maputo, sob número " +
+                "101097439, representada pelo seu representante, <b>"+microcredito.mutuante+"</b>, adiante designado por <b>MUTUANTE,</b>" +
+                "<br>"+
+                "<p><b>E,</b></p>" +
+                "<b>"+cliente.nome+"</b>, de nacionalidade Moçambicana, natural de "+cliente.naturalidade + "portador do" +
+                " <b>"+cliente.tipoDocumento.descricao+"</b> nº "+cliente.nrDocumento+", emitido em "+cliente.localEmissao+" " +
+                "aos "+methods.formatData(cliente.dataEmissao)+" adiante designada por <b>MUTUÁRIA</b> têm entre si," +
+                " justo e contratado, o seguinte:"+
+                "<br>"+
+                "<p>&#9;&#9;&#9;&#9;&#9;<b>(Objecto)</b></p>" +
+                "I - O MUTUANTE concede ao MUTUÁRIO neste acto, um crédito de <b>" +
+                String.format("%,.2f", emprestimo.valorPedido) + " Mt (" + valorPedidoExtenso.trim() + ").</b>" +
+                "<br>" +
+                "<p>&#9;&#9;&#9;&#9;  <b>(Obrigação do Mutuário)</b></p>"+
+                "II - O MUTUÁRIO se compromete a restituir ao MUTUANTE a quantia mutuada, mediante" +
+                "ao pagamento de "+parcelas(emprestimo)+" a contar da data da assinatura" +
+                "do presente contrato de Mútuo Oneroso, até a liquidação TOTAL da dívida no valor <b>"
+                +String.format("%,.2f", emprestimo.valorApagar) + " Mt (" + valorAPagarExtenso +").</b>" +
+                "<br>" +
+                "<p>&#9;&#9;&#9;&#9;&#9;<b>(Garantia)</b></p>"+
+                " O MUTUÁRIO entregará como garantia do presente acordo, os seguintes bens:"+bens.trim()
         )
 
-        contratoExclusive.setTxtCliente("<p><center><b>E,</b></center></p><b>"+cliente.nome+'</b>, de nacionalidade Moçambicana, natural de '+cliente.naturalidade +
-                '\nportador do <b>'+cliente.tipoDocumento.descricao+'</b> nº \n'+cliente.nrDocumento+', emitido em '+cliente.localEmissao+'\naos '
-                +methods.formatData(cliente.dataEmissao)+
-                ' adiante designada por <b>MUTUÁRIA</b> têm entre si, justo e contratado, o seguinte:'
-        )
-
-        contratoExclusive.setTxtObjecto(
-                'I - O MUTUANTE concede <br> ao MUTUÁRIO,'+'&#13;'+'neste acto, &#10; um crédito de <b>' + String.format("%,.2f", emprestimo.valorPedido) + ' Mt (' + valorPedidoExtenso.trim() + ').</b>'
-        )
-
-        contratoExclusive.setTxtObrigacao(
-                'II - O MUTUÁRIO se compromete a restituir ao MUTUANTE a quantia mutuada, mediante\n' +
-                'ao pagamento de '+parcelas(emprestimo)+' a contar da data da assinatura\n ' +
-                'do presente contrato de Mútuo Oneroso, até a liquidação TOTAL da dívida no valor <b>'
-                        +String.format("%,.2f", emprestimo.valorApagar) + ' Mt (' + valorAPagarExtenso + ').</b>'
-        )
-
-        contratoExclusive.setTxtGarantia('III - O MUTUÁRIO entregará como garantia do presente acordo, os seguintes bens:\n'+bens.trim())
-
-        contratoExclusive.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '                                                       Data: ' + methods.formatData(new Date()))
-        contratoExclusive.setLogo(new File(jasperLogo).toString())
-
-        List<IreportContratoExclusive> ireportContratoList = new ArrayList<>()
-        ireportContratoList.add(contratoExclusive)
+        List<IreportContrato> ireportContratoList = new ArrayList<>()
+        ireportContratoList.add(contrato)
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ireportContratoList)
         JasperPrint jasperPrint = JasperFillManager.fillReport(new File(jasperDir + 'contrato.jasper').toString(), null, dataSource)
         OutputStream outputStream = new FileOutputStream(new File(jasperDir + 'contrato_frente.pdf'))
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream)
-        System.out.println("contrato frente pdf Generated:")
+//        System.out.println("contrato frente pdf Generated now:")
 
         return  jasperPrint
    }
 
-    def pdfContratoExclusiveVerso(Emprestimo emprestimo) {
-        IreportContratoExclusive contratoExclusive = new IreportContratoExclusive()
-        contratoExclusive.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '          Data: ' + methods.formatData(new Date()))
-        contratoExclusive.setTxtSexta('O presente penhor torna-se imediaente exigível logo que esteja vencida qualquer obrigação ' +
-                'e se verifique mora no seu cumprimento, ou ainda, quando qualquer dos bens penhorados, arrestado, ' +
-                'ou objecto de qualquer forma de apreensão judicial. '
+    def pdfContratoVerso(Emprestimo emprestimo) {
+        def microcredito = MicroCredito.get(1)
+        def cliente = emprestimo.cliente
+        IreportContrato contrato = new IreportContrato()
+        def exte = porExtenso(cw.write(new BigDecimal(emprestimo.taxaJuros)))
+        def quebra = exte.split(' ')
+        contrato.setUserAndDate('Data: ' + methods.formatData(new Date()) + '&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;utilizador: ' +emprestimo.userRegisto.nome)
+
+        contrato.setTxtContrato("Que serão penhorados para a liquidação da divida contraída caso o MUTUÁRIO não consiga " +
+                "honrar com o compromisso de pagamento da dívida contraída nas datas programadas."+
+                "<br>" +
+                "<p>&#9;&#9;&#9;&#9;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>(Taxa de Juro)</b></p>" +
+                "IV - o montante mutuado vence juros à taxa de "+emprestimo.taxaJuros+"% ("+quebra[0].trim()+" por centos) ao mês." +
+                "<br>" +
+                "<p>&#9;&#9;&#9;&#9;&#9;<b>(Sanções)</b></p>" +
+                "V - Na falta de pagamento do empréstimo na data aprazada o MUTUÁRIO pagará uma multa no percentual de " +
+                "1.5%(um virgula cinco por cento) do valor total da dívida por cada dia de atraso;"+
+                "<br>" +
+                "<p>&#9;&#9;&#9;&#9;&#9;<b>(Encargos)</b></p>" +
+                "VI - Todos encargos que venham a recair durante o periódo da posse dos bens supracitados pelo MUTUANTE," +
+                " continuarão na responsabilidade do MUTUÁRIO, devendo ser acrescidos na dívida se houver inadimplemento " +
+                "por parte do MUTUÁRIO;" +
+                "<br>" +
+                "VII - Se o MUTUANTE recorrer à via judicial para receber o seu crédito, terá direito à multa compensatória " +
+                "de 1.5% (um virgula cinco por cento) do valor do crédito e a correção monetária, sem prejuizo dos custos" +
+                " e das despesas processuais." +
+                "<br>" +
+                "E, por estarem de acordo com todas as disposições nele consignadas, as partes assinam esse instrumento" +
+                "particular, juntamente com uma testemunha, em duas vias de igual teor, ficando cada parte com uma via." +
+                "<br>" +
+                "<p>Maputo "+methods.formatDataNascimento(new  Date())+"</p>" +
+                "<br>" +
+                "<p>_____________________________________&#9;&#9;&#9;_____________________________________</p>" +
+                "<p>&#9;"+microcredito.mutuante+"&#9;&#9;&#9;&#9;&#9;"+cliente.nome+"</p>\n" +
+                "<p>&#9;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Mutuante)&#9;&#9;&#9;&#9;&#9;&#9;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Mutuário)</p>"
         )
 
-        contratoExclusive.setTxtSetima('1 - Tornando-se exigível o penhor, fica o PRIMEIRO CONTRAENTE, desde já, ' +
-                'expressamente autorizado pelo SEGUNDO CONTRAENTE, que lhe confere os necessários poderes, a em nome do ' +
-                'SEGUNDO CONTRAENTE, vender extrajudicialmente os bens penhorados, como melhor entender, sem dependência ' +
-                'de qualquer formalidade, recebendo os respectivos produtos da venda e deles dando quitação. O SEGUNDO ' +
-                'CONTRAENTE autoriza, ainda, o PRIMEIRO CONTRAENTE a substabelecer tais poderes. \n' +
-                '\n' +
-                '2 - Fica desde já expressamente autorizado o PRIMEIRO CONTRAENTE, ou quem este indicar, a levantar, pelos ' +
-                'meios adequados, os bens objecto do presente penhor mesmo que para tal seja necessário aceder ao local onde ' +
-                'se encontrem os mesmos. \n' +
-                '\n' +
-                '3 - Para efeitos dos números anteriores, o SEGUNDO CONTRAENTE obriga-se a praticar todos os actos em que, ' +
-                'por qualquer motivo, deva intervir para se efectuarem as transmissões. '
-        )
-
-        contratoExclusive.setTxtOitava('Em caso de incumprimento de qualquer uma das responsabilidades/obrigações em questão,' +
-                ' fica o primeiro contratante autorizado a acabar de preencher a livrança acima referida pelo montante que se ' +
-                'encontra em dívida e fixando-lhe o vencimento, em qualquer das modalidades permitidas por este contrato. '
-        )
-
-        contratoExclusive.setTxtNona('Para dirimir qualquer questão emergente do presente contrato é competente o Tribunal ' +
-                'Judicial, com expressa renúncia a qualquer outro por mais privilegiado que seja. \n' +
-                'E, por estarem de acordo com todas as disposições nele consignadas, as partes assinam esse instrumento ' +
-                'particular, juntamente com duas testemunhas, em duas vias de igual teor, ficando cada parte com uma via. '
-        )
-
-        contratoExclusive.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '                                                       Data: ' + methods.formatData(new Date()))
-        contratoExclusive.setData(methods.formatDataNascimento(new Date()))
-
-        List<IreportContratoExclusive> ireportContratoList = new ArrayList<>()
-        ireportContratoList.add(contratoExclusive)
+        List<IreportContrato> ireportContratoList = new ArrayList<>()
+        ireportContratoList.add(contrato)
 
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ireportContratoList)
         JasperPrint jasperPrint = JasperFillManager.fillReport(new File(jasperDir + 'contrato_verso.jasper').toString(), null, dataSource)
         OutputStream outputStream = new FileOutputStream(new File(jasperDir + 'contrato_verso.pdf'))
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream)
-        System.out.println("contrato frente pdf Generated:")
+//        System.out.println("contrato frente pdf Generated:")
 
         return jasperPrint
     }
 
-    def pdfContratoExclusive(Emprestimo emprestimo){
+    def pdfContrato(Emprestimo emprestimo){
         List<ExporterInputItem> exporterInputItems = new ArrayList<>()
         ExporterInputItem exporterInputItemFrente = new ExporterInputItem() {
             @Override
@@ -210,7 +208,7 @@ class IreportController {
         ExporterInputItem exporterInputItemVerso = new ExporterInputItem() {
             @Override
             JasperPrint getJasperPrint() {
-                return pdfContratoExclusiveVerso(emprestimo)
+                return pdfContratoVerso(emprestimo)
             }
 
             @Override
@@ -234,15 +232,16 @@ class IreportController {
         System.out.println("contrato pdf Generated")
     }
 
-    def pdfPrestacoesExclusive(Emprestimo emprestimo) {
+    def pdfPrestacoes(Emprestimo emprestimo) {
         List<IreportPrestacao> ireportPrestacaoList = new ArrayList<>()
         def prestacoes = Prestacao.createCriteria().list { eq('emprestimo', emprestimo) order('id') }
         prestacoes.each {
-            if (it.tipoPrestacao.id == 1) {                 //exclui taxa de concessao
+            if (it.tipoPrestacao.id == 1 || it.tipoPrestacao.id == 6) {                 //exclui taxa de concessao
                 IreportPrestacao prestacao = new IreportPrestacao()
                 prestacao.setNum(it.numero)
                 prestacao.setValor(String.format("%,.2f",it.valor))
                 prestacao.setLimite(methods.formatData(it.dataLimite).toString())
+                prestacao.setTipo(it.tipoPrestacao.descricao)
                 ireportPrestacaoList.add(prestacao)
             }
         }
@@ -251,18 +250,49 @@ class IreportController {
         Map<String, Object> parameters = new HashMap<String, Object>()
         parameters.put('prestacoesSource', beansPrestacoes)
 
+        def microcredito = MicroCredito.get(1)
         IreportEmprestimo ireportEmprestimo = new IreportEmprestimo()
-        ireportEmprestimo.setValorPedido(String.format("%,.2f",emprestimo.valorPedido) + ' MT')
-        ireportEmprestimo.setTaxaJuros(emprestimo.taxaJuros.toString())
-        ireportEmprestimo.setValorApagar(String.format("%,.2f", emprestimo.valorApagar) + ' MT')
-        ireportEmprestimo.setRenda(String.format("%,.2f", emprestimo.valorPedido*emprestimo.taxaJuros/100) + ' MT')
-        ireportEmprestimo.setPrazoPretendido(methods.formatData(emprestimo.prazoPagamento).toString())
-        ireportEmprestimo.setInicioPagamento(methods.formatData(emprestimo.dataInicioPagamento).toString())
-        ireportEmprestimo.setModoPagamento(emprestimo.modoPagamento.descricao)
-        ireportEmprestimo.setNrProcesso(emprestimo.nrProcesso)
-        ireportEmprestimo.setCliente(emprestimo.cliente.nome.toUpperCase())
+
+        ireportEmprestimo.setTxtDados(
+            "<b>" +
+                "Rua: " +microcredito.endereco+"<br>" +
+                "Cell: " +microcredito.celular+"<br>" +
+                "Email: " +microcredito.email+"<br>"+
+                "NUIT: "+microcredito.nuit+
+            "</b>"
+        )
+
+        def rt
+        if(emprestimo.modoPagamento.descricao.equalsIgnoreCase('mensal')){
+            rt = 'Juros'
+        }else{
+            rt = 'Renda Normal'
+        }
+
+        ireportEmprestimo.setTxtContrato(
+                "<p>Nº do processo: "+emprestimo.nrProcesso+"&#9;&#9;Modalidade:"+emprestimo.modoPagamento.descricao +
+                        " &#9;Cliente: <b>"+emprestimo.cliente.nome.toUpperCase()+"</b></p>" +
+
+                "<p>Capital: "+String.format("%,.2f",emprestimo.valorPedido) + "MT&#9;&#9;Taxa de juros: "+
+                        emprestimo.taxaJuros.toString()+"&#9;&#9;"+rt+": "+
+                        String.format("%,.2f", emprestimo.valorPedido*emprestimo.taxaJuros/100)+"</p>"+
+
+                "<p>Reembolso: "+String.format("%,.2f", emprestimo.valorApagar)+"&#9;&#9;&#9;&#9;" +
+                        "Data do Reembolso: "+methods.formatData(emprestimo.prazoPagamento).toString()+"</p>"
+
+        )
+//
+//        ireportEmprestimo.setValorPedido(String.format("%,.2f",emprestimo.valorPedido) + ' MT')
+//        ireportEmprestimo.setTaxaJuros(emprestimo.taxaJuros.toString())
+//        ireportEmprestimo.setValorApagar(String.format("%,.2f", emprestimo.valorApagar) + ' MT')
+//        ireportEmprestimo.setRenda(String.format("%,.2f", emprestimo.valorPedido*emprestimo.taxaJuros/100) + ' MT')
+//        ireportEmprestimo.setPrazoPretendido(methods.formatData(emprestimo.prazoPagamento).toString())
+//        ireportEmprestimo.setInicioPagamento(methods.formatData(emprestimo.dataInicioPagamento).toString())
+//        ireportEmprestimo.setModoPagamento(emprestimo.modoPagamento.descricao)
+//        ireportEmprestimo.setNrProcesso(emprestimo.nrProcesso)
+//        ireportEmprestimo.setCliente(emprestimo.cliente.nome.toUpperCase())
         ireportEmprestimo.setLogo(new File(jasperLogo).toString())
-        ireportEmprestimo.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '                                                         Data: ' + methods.formatData(new Date()))
+        ireportEmprestimo.setUserAndDate('Data: ' + methods.formatData(new Date()) + '&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;utilizador: ' +emprestimo.userRegisto.nome)
 
         List<IreportEmprestimo> arraylistOfEmprestimos = new ArrayList<>()
         arraylistOfEmprestimos.add(ireportEmprestimo)
@@ -275,9 +305,8 @@ class IreportController {
     }
 
     class Recibo{
-        String num, tipo, valor, meio,referencia, nrProcesso,cliente, contacto,userAndDate,logo,nrRecibo
+        String num, tipo, valor, meio,referencia, nrProcesso,cliente, contacto,userAndDate,logo,nrRecibo,txtDados
     }
-
 
     static reciboDir =''
     def pdfRecibo(Emprestimo emprestimo, def prestacoesArrayList) {
@@ -288,9 +317,20 @@ class IreportController {
         if(!new File(destinoRecibo).isDirectory()) {
             new File(destinoRecibo).mkdir()
         }
+        def microcredito = MicroCredito.get(1)
+
         Recibo recibo = new Recibo()
+        recibo.setTxtDados(
+            "<b>" +
+                    "Rua: " +microcredito.endereco+"<br>" +
+                    "Cell: " +microcredito.celular+"<br>" +
+                    "Email: " +microcredito.email+"<br>"+
+                    "NUIT: "+microcredito.nuit+
+                    "</b>"
+        )
+
         recibo.setLogo(new File(jasperLogo).toString())
-        recibo.setUserAndDate('Utilizador: ' + emprestimo.userRegisto.nome + '\t\t\t\t\t\t\tData: ' + methods.formatDataeHora(new Date()))
+        recibo.setUserAndDate('Data: ' + methods.formatData(new Date()) + '&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;utilizador: ' +emprestimo.userRegisto.nome)
         recibo.setNrProcesso(emprestimo.nrProcesso)
         recibo.setCliente(emprestimo.cliente.nome)
         recibo.setContacto(emprestimo.cliente.contacto1)
