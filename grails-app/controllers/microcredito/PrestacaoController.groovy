@@ -718,43 +718,7 @@ class PrestacaoController {
         }
     }
 
-
-    /*Fader */
-
-//    def salvarPrestacoes(Emprestimo emprestimo) {
-//        List<Prestacao> prestacaoList = new ArrayList<>()
-//        def contador = 1
-//        Calendar calendar = Calendar.getInstance()
-//        calendar.setTime(emprestimo.dataInicioPagamento)
-//        def limite
-//        while (contador < emprestimo.nrPrestacoes+1) {
-//            limite = calendar.getTime()
-//            Prestacao prestacao = new Prestacao()
-//            prestacao.valor = params.valorPorPrestacao.toDouble()
-//            prestacao.estado = "Pendente"
-//            def zeros = (3 - (contador.toString().length()))
-//            prestacao.numero = emprestimo.nrProcesso+methods.retornaZeros(zeros)+contador
-//            prestacao.emprestimo = emprestimo
-//            prestacao.setDataRegisto(emprestimo.dataRegisto)
-//            prestacao.setDataModif(emprestimo.dataModif)
-//            prestacao.setUserRegisto(emprestimo.userRegisto)
-//            prestacao.setUserModif(emprestimo.userRegisto)
-//            prestacao.dataLimite =  methods.saltarDomingos(Date.parse("yyyy-MM-dd", (limite).format("yyyy-MM-dd")))
-//            prestacao.tipoPrestacao = TipoPrestacao.get(1)
-//            prestacaoList.add(prestacao)
-//            contador+=1
-//            calendar.add(Calendar.MONTH, 1)
-//        }
-//        return prestacaoList
-//    }
-
-//<<<<<<< HEAD
-//    IreportController ireportController = new IreportController()
-//=======
-//
-//    IreportController ireportController = new IreportController()
-//
-//>>>>>>> 3c0360e30e2a1e5d251a94ce0006a3316bd0d32d
+    IreportController ireportController = new IreportController()
     def pagamentos3() { //Aqui e realizado o registo de pagamentos
 
         def idPrestacao = 0;
@@ -809,6 +773,9 @@ class PrestacaoController {
                 prestacaoListRecibo.add(prestacaoRecibo)
             }
         }
+
+        ireportController.pdfRecibo(emprestimo,prestacaoListRecibo)
+        methods.backupDB()
     }
 
     @Secured(['ROLE_ADMIN' , 'ROLE_USER'])

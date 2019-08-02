@@ -88,8 +88,6 @@
 </div>
 </body>
 <script>
-    $(document).ready(function(){
-        alert('fader');
-    });
+
 </script>
 </html>
