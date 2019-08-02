@@ -306,7 +306,7 @@ class IreportController {
 
     class Recibo{
         String num, tipo, valor, meio,referencia, nrProcesso,cliente, contacto,userAndDate,logo,nrRecibo
-        String txtEndereco, txtContacto, txtEmail, txtNuit
+        String txtEndereco, txtContacto, txtEmail, txtNuit, txtData,txtWebsite, txtUser
     }
 
     static reciboDir =''
@@ -321,21 +321,15 @@ class IreportController {
         def microcredito = MicroCredito.get(1)
 
         Recibo recibo = new Recibo()
-//        recibo.setTxtDados(
-//            "<b>" +
-//                    "Rua: " +microcredito.endereco+"<br>" +
-//                    "Cell: " +microcredito.celular+"<br>" +
-//                    "Email: " +microcredito.email+"<br>"+
-//                    "NUIT: "+microcredito.nuit+
-//                    "</b>"
-//        )
-
+        recibo.setLogo(new File(jasperLogo).toString())
         recibo.setTxtEndereco(microcredito.endereco)
         recibo.setTxtContacto(microcredito.celular)
         recibo.setTxtEmail(microcredito.email)
         recibo.setTxtNuit(microcredito.nuit)
-        recibo.setLogo(new File(jasperLogo).toString())
-        recibo.setUserAndDate('Data: ' + methods.formatData(new Date()) + '&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;utilizador: ' +emprestimo.userRegisto.nome)
+
+        recibo.setTxtData('Data: ' + methods.formatData(new Date()))
+        recibo.setTxtWebsite("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+microcredito.webSite)
+        recibo.setTxtUser('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utilizador: '+emprestimo.userRegisto.nome)
         recibo.setNrProcesso(emprestimo.nrProcesso)
         recibo.setCliente(emprestimo.cliente.nome)
         recibo.setContacto(emprestimo.cliente.contacto1)
