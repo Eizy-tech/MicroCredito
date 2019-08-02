@@ -41,9 +41,4 @@ class Cliente {
         observacao type: "text"
     }
 
-//    String getNomeCompleto(){
-//        return "$nome $apelido"
-//    }
-//    static transients = ['nomeCompleto']
-
 }
