@@ -928,7 +928,7 @@
                             });
                             setInterval(
                                 function () {
-                                    // location.reload();
+                                    location.reload();
                                     window.open('<g:createLink controller="prestacao" action="verRecibo"/>', '_blank');
                                 }, 1000
                             )
